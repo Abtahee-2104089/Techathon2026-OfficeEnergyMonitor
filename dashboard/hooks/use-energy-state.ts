@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 
+import { instantDb } from "@/lib/instant"
 import type { EnergyState } from "@/lib/energy-simulator"
 
 export const initialEnergyState: EnergyState = {
@@ -17,10 +18,14 @@ export const initialEnergyState: EnergyState = {
 }
 
 export function useEnergyState() {
-  const [state, setState] = useState<EnergyState>(initialEnergyState)
-  const [connection, setConnection] = useState<
+  const [apiState, setApiState] = useState<EnergyState>(initialEnergyState)
+  const [apiConnection, setApiConnection] = useState<
     "connecting" | "live" | "offline"
   >("connecting")
+  const instantQuery = instantDb?.useQuery({ snapshots: {} })
+  const instantSnapshot = instantQuery?.data?.snapshots.find(
+    (snapshot) => snapshot.snapshotId === "current"
+  )
 
   useEffect(() => {
     let active = true
@@ -36,12 +41,12 @@ export function useEnergyState() {
         const nextState = (await response.json()) as EnergyState
 
         if (active) {
-          setState(nextState)
-          setConnection("live")
+          setApiState(nextState)
+          setApiConnection("live")
         }
       } catch {
         if (active) {
-          setConnection("offline")
+          setApiConnection("offline")
         }
       }
     }
@@ -54,6 +59,9 @@ export function useEnergyState() {
       window.clearInterval(timer)
     }
   }, [])
+
+  const state = instantSnapshot?.payload ?? apiState
+  const connection = instantSnapshot?.payload ? "live" : apiConnection
 
   return { state, connection }
 }

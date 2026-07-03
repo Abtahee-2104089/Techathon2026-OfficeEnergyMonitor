@@ -16,6 +16,8 @@ export const config = {
     /\/$/,
     ""
   ),
+  instantAppId: process.env.INSTANT_APP_ID ?? "",
+  instantAdminToken: process.env.INSTANT_APP_ADMIN_TOKEN ?? "",
   prefix: process.env.BOT_PREFIX ?? "!",
   alertPollMs: optionalNumber(process.env.ALERT_POLL_SECONDS, 20) * 1000,
 }
