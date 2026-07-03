@@ -7,6 +7,7 @@ import {
   IconAlertTriangle,
   IconBolt,
   IconBrandDiscord,
+  IconCircuitBulb,
   IconChartAreaLine,
   IconDeviceDesktopAnalytics,
   IconGitBranch,
@@ -53,6 +54,11 @@ const navItems = [
     title: "Architecture",
     href: "/architecture",
     icon: IconGitBranch,
+  },
+  {
+    title: "Hardware",
+    href: "/hardware",
+    icon: IconCircuitBulb,
   },
   {
     title: "Discord Bot",
