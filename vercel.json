@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "bun install --cwd dashboard",
-  "buildCommand": "bun run --cwd dashboard build",
-  "outputDirectory": "dashboard/.next"
+  "installCommand": "bun install",
+  "buildCommand": "bun run build"
 }
