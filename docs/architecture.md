@@ -36,6 +36,8 @@ Responsible for:
 - Generating alerts.
 - Broadcasting live updates.
 
+Current implementation: the dashboard package exposes `GET /api/state` through a Next.js route handler. This keeps the demo simple while still giving the dashboard and Discord bot one shared backend contract.
+
 ### Web Dashboard
 
 Responsible for:
@@ -53,6 +55,17 @@ Responsible for:
 - Answering office status commands.
 - Reading real backend data.
 - Posting proactive alert messages when configured.
+
+Current commands:
+
+```text
+!status
+!room drawing
+!room work1
+!room work2
+!usage
+!help
+```
 
 ## Data Flow
 

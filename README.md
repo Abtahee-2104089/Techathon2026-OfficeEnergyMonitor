@@ -136,14 +136,17 @@ Bonus behavior: proactively post to a configured channel when a new alert appear
 
 ## Repository Structure
 
-Planned structure:
-
 ```text
 .
-├── apps/
-│   ├── web/
-│   ├── api/
-│   └── bot/
+├── bot/
+│   ├── src/
+│   ├── .env.example
+│   └── package.json
+├── dashboard/
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   └── package.json
 ├── docs/
 │   ├── architecture.md
 │   ├── hardware-schematic.md
@@ -169,18 +172,46 @@ BACKEND_URL=http://localhost:4000
 
 ## Local Development
 
-The app has not been implemented yet. Planned commands:
+Run the dashboard:
 
 ```bash
-npm install
-npm run dev
+cd dashboard
+bun install
+bun run dev
 ```
 
-Expected dev services after implementation:
+Dashboard services:
 
-- Web dashboard: `http://localhost:5173`
-- Backend API: `http://localhost:4000`
-- Discord bot: same backend URL through `BACKEND_URL`
+- Web dashboard: `http://127.0.0.1:3000`
+- Shared state API: `http://127.0.0.1:3000/api/state`
+
+Run the Discord bot:
+
+```bash
+cd bot
+cp .env.example .env
+bun install
+bun run start
+```
+
+Bot environment:
+
+```text
+DISCORD_TOKEN=your_bot_token
+BACKEND_URL=http://127.0.0.1:3000
+DISCORD_CHANNEL_ID=optional_alert_channel_id
+```
+
+Bot commands:
+
+```text
+!status
+!room drawing
+!room work1
+!room work2
+!usage
+!help
+```
 
 ## Team Contribution Plan
 
@@ -204,4 +235,4 @@ See [docs/team-contributions.md](docs/team-contributions.md) for details.
 
 ## Current Status
 
-Planning and documentation are in progress. Implementation should start with the shared backend and simulator, then dashboard, then Discord bot.
+The dashboard and Discord bot are implemented as separate packages. The dashboard exposes the shared live state API, and the bot reads from that same endpoint.

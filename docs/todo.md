@@ -9,41 +9,41 @@
 
 ## Backend
 
-- [ ] Initialize Node.js/TypeScript backend.
-- [ ] Define rooms and 15 simulated devices.
-- [ ] Build simulator that changes device states over time.
-- [ ] Calculate total watts and room-level watts.
-- [ ] Estimate daily kWh from simulated runtime.
-- [ ] Implement alert rules.
-- [ ] Add REST API endpoints.
+- [x] Initialize TypeScript backend through the Next.js dashboard app.
+- [x] Define rooms and 15 simulated devices.
+- [x] Build simulator that changes device states over time.
+- [x] Calculate total watts and room-level watts.
+- [x] Estimate daily kWh from simulated runtime.
+- [x] Implement alert rules.
+- [x] Add REST API endpoint for shared state.
 - [ ] Add Socket.IO real-time updates.
 - [ ] Add CORS configuration for dashboard.
 
 ## Web Dashboard
 
-- [ ] Initialize React/TypeScript frontend.
-- [ ] Connect to backend API.
+- [x] Initialize Next.js/React/TypeScript frontend.
+- [x] Connect to backend API.
 - [ ] Connect to Socket.IO updates.
-- [ ] Build top-view office layout.
-- [ ] Animate lights when on.
-- [ ] Animate fans when on.
-- [ ] Add live total power meter.
-- [ ] Add per-room power breakdown.
-- [ ] Add device status panel grouped by room.
-- [ ] Add active alerts panel.
+- [x] Build top-view office layout.
+- [x] Animate lights when on.
+- [x] Animate fans when on.
+- [x] Add live total power meter.
+- [x] Add per-room power breakdown.
+- [x] Add device status panel grouped by room.
+- [x] Add active alerts panel.
 - [ ] Make dashboard responsive for demo laptop screens.
 - [ ] Polish loading, empty, and disconnected states.
 
 ## Discord Bot
 
-- [ ] Initialize Discord bot package.
-- [ ] Read backend URL from environment variable.
-- [ ] Implement `!status`.
-- [ ] Implement `!room <name>`.
-- [ ] Implement `!usage`.
-- [ ] Humanize responses.
-- [ ] Add proactive alert posting to configured channel.
-- [ ] Document bot setup and permissions.
+- [x] Initialize Discord bot package.
+- [x] Read backend URL from environment variable.
+- [x] Implement `!status`.
+- [x] Implement `!room <name>`.
+- [x] Implement `!usage`.
+- [x] Humanize responses.
+- [x] Add proactive alert posting to configured channel.
+- [x] Document bot setup and permissions.
 
 ## Diagrams And Hardware
 
