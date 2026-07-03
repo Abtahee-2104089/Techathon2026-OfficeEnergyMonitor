@@ -4,10 +4,8 @@ import {
   IconCircuitSwitchClosed,
   IconCpu2,
   IconExternalLink,
-  IconInfoCircle,
 } from "@tabler/icons-react"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -27,43 +25,53 @@ import {
 
 const devices = [
   {
+    id: "drawing-room-fan-1",
     name: "Fan 1",
     type: "fan",
     output: "GPIO 16",
     sense: "GPIO 32",
-    watts: "60W",
+    ratedWatts: 60,
+    relay: "CH1",
     y: 118,
   },
   {
+    id: "drawing-room-fan-2",
     name: "Fan 2",
     type: "fan",
     output: "GPIO 17",
     sense: "GPIO 33",
-    watts: "60W",
+    ratedWatts: 60,
+    relay: "CH2",
     y: 188,
   },
   {
+    id: "drawing-room-light-1",
     name: "Light 1",
     type: "light",
     output: "GPIO 18",
     sense: "GPIO 25",
-    watts: "15W",
+    ratedWatts: 15,
+    relay: "CH3",
     y: 258,
   },
   {
+    id: "drawing-room-light-2",
     name: "Light 2",
     type: "light",
     output: "GPIO 19",
     sense: "GPIO 26",
-    watts: "15W",
+    ratedWatts: 15,
+    relay: "CH4",
     y: 328,
   },
   {
+    id: "drawing-room-light-3",
     name: "Light 3",
     type: "light",
     output: "GPIO 21",
     sense: "GPIO 27",
-    watts: "15W",
+    ratedWatts: 15,
+    relay: "CH5",
     y: 398,
   },
 ]
@@ -85,31 +93,20 @@ export default function HardwarePage() {
         <div className="flex flex-wrap gap-2">
           <Badge>Wokwi concept</Badge>
           <Badge variant="outline">ESP32</Badge>
-          <Badge variant="secondary">one room</Badge>
+          <Badge variant="secondary">drawing-room</Badge>
         </div>
       </header>
-
-      <Alert>
-        <IconInfoCircle />
-        <AlertTitle>Why not render with avr8js?</AlertTitle>
-        <AlertDescription>
-          avr8js is the AVR CPU simulation core, not the Wokwi visual renderer.
-          Our concept uses ESP32, so this page renders the representative Wokwi
-          circuit directly as a readable dashboard preview while the real Wokwi
-          files stay in the repository.
-        </AlertDescription>
-      </Alert>
 
       <section className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IconCircuitBulb data-icon="inline-start" />
-              Wokwi-style circuit preview
+              Relay and sensing preview
             </CardTitle>
             <CardDescription>
-              Slide switches model safe device-state feedback; LEDs model
-              low-voltage output indicators.
+              The representative room circuit mirrors the simulator contract:
+              device id, room, type, status, watts, ratedWatts.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -130,6 +127,7 @@ export default function HardwarePage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Device</TableHead>
+                    <TableHead>Relay</TableHead>
                     <TableHead>Output</TableHead>
                     <TableHead>Sense</TableHead>
                     <TableHead className="text-right">Watts</TableHead>
@@ -141,10 +139,11 @@ export default function HardwarePage() {
                       <TableCell className="font-medium">
                         {device.name}
                       </TableCell>
+                      <TableCell>{device.relay}</TableCell>
                       <TableCell>{device.output}</TableCell>
                       <TableCell>{device.sense}</TableCell>
                       <TableCell className="text-right">
-                        {device.watts}
+                        {device.ratedWatts}W
                       </TableCell>
                     </TableRow>
                   ))}
@@ -191,7 +190,7 @@ function CircuitPreview() {
           Drawing Room representative IoT circuit
         </text>
         <text x="28" y="72" className="fill-muted-foreground text-sm">
-          2 fans + 3 lights · safe inputs · low-voltage indicators
+          2 fans + 3 lights · ESP32 inputs · relay channels · JSON state
         </text>
 
         <foreignObject x="35" y="145" width="190" height="250">
@@ -203,19 +202,23 @@ function CircuitPreview() {
               <div className="font-semibold">ESP32</div>
             </div>
             <div className="text-sm leading-6 text-muted-foreground">
-              Reads five state inputs and mirrors them to output indicators.
+              Reads safe switch feedback, drives relay channels, and emits the
+              same state shape used by the dashboard and Discord bot.
             </div>
             <Badge variant="secondary" className="w-fit">
-              JSON over serial
+              drawing-room
             </Badge>
           </div>
         </foreignObject>
 
         <text x="285" y="115" className="fill-muted-foreground text-sm">
-          State inputs
+          Sense inputs
         </text>
-        <text x="610" y="115" className="fill-muted-foreground text-sm">
-          Output indicators
+        <text x="612" y="115" className="fill-muted-foreground text-sm">
+          Relay channels
+        </text>
+        <text x="740" y="115" className="fill-muted-foreground text-sm">
+          Loads
         </text>
 
         {devices.map((device, index) => (
@@ -225,12 +228,16 @@ function CircuitPreview() {
               color="var(--chart-2)"
             />
             <Wire
-              d={`M390 ${device.y + 11} H502`}
+              d={`M390 ${device.y + 11} H486`}
               color="var(--chart-1)"
             />
             <Wire
-              d={`M548 ${device.y + 11} H612`}
+              d={`M574 ${device.y + 11} H614`}
               color="var(--chart-1)"
+            />
+            <Wire
+              d={`M700 ${device.y + 11} H738`}
+              color="var(--chart-5)"
             />
             <DeviceSwitch
               x={282}
@@ -238,13 +245,19 @@ function CircuitPreview() {
               label={device.name}
               pin={device.sense}
             />
-            <Resistor x={505} y={device.y - 8} />
-            <LoadLed
-              x={625}
+            <Resistor x={489} y={device.y - 8} />
+            <RelayChannel
+              x={585}
               y={device.y - 18}
-              label={`${device.name} ${device.watts}`}
-              type={device.type}
+              channel={device.relay}
               pin={device.output}
+            />
+            <LoadDevice
+              x={745}
+              y={device.y - 18}
+              label={`${device.name} ${device.ratedWatts}W`}
+              type={device.type}
+              id={device.id}
             />
             <text
               x="238"
@@ -255,6 +268,15 @@ function CircuitPreview() {
             </text>
           </g>
         ))}
+
+        <foreignObject x="292" y="452" width="420" height="70">
+          <div className="rounded-lg border bg-card p-3 text-xs text-card-foreground shadow-sm">
+            <div className="font-medium">Serial payload example</div>
+            <code className="mt-1 block truncate text-muted-foreground">
+              {"{\"id\":\"drawing-room-fan-1\",\"status\":\"on\",\"watts\":60,\"ratedWatts\":60}"}
+            </code>
+          </div>
+        </foreignObject>
 
         <path
           d="M690 476 H250 V413"
@@ -310,21 +332,49 @@ function Resistor({ x, y }: { x: number; y: number }) {
   )
 }
 
-function LoadLed({
+function RelayChannel({
+  x,
+  y,
+  channel,
+  pin,
+}: {
+  x: number
+  y: number
+  channel: string
+  pin: string
+}) {
+  return (
+    <foreignObject x={x} y={y} width="125" height="60">
+      <div className="flex h-full items-center gap-3 rounded-md border bg-card px-3 text-card-foreground shadow-sm">
+        <span className="flex size-8 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
+          {channel}
+        </span>
+        <div className="min-w-0">
+          <div className="truncate text-xs font-medium">Relay</div>
+          <div className="truncate font-mono text-[10px] text-muted-foreground">
+            {pin}
+          </div>
+        </div>
+      </div>
+    </foreignObject>
+  )
+}
+
+function LoadDevice({
   x,
   y,
   label,
   type,
-  pin,
+  id,
 }: {
   x: number
   y: number
   label: string
   type: string
-  pin: string
+  id: string
 }) {
   return (
-    <foreignObject x={x} y={y} width="170" height="60">
+    <foreignObject x={x} y={y} width="140" height="60">
       <div className="flex h-full items-center gap-3 rounded-md border bg-card px-3 text-card-foreground shadow-sm">
         <span className="flex size-8 items-center justify-center rounded-full border bg-background">
           <span
@@ -338,7 +388,7 @@ function LoadLed({
         <div className="min-w-0">
           <div className="truncate text-xs font-medium">{label}</div>
           <div className="truncate font-mono text-[10px] text-muted-foreground">
-            {pin}
+            {id}
           </div>
         </div>
       </div>
