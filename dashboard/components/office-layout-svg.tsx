@@ -143,7 +143,7 @@ function Architecture() {
       <g
         stroke="var(--office-map-wall)"
         strokeLinecap="round"
-        strokeWidth="4"
+        strokeWidth="6"
         fill="none"
       >
         <path d="M 20 400 L 20 20 L 880 20 L 880 400 L 750 400 M 650 400 L 480 400 M 380 400 L 210 400 M 110 400 L 20 400" />
