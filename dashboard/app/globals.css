@@ -140,3 +140,38 @@
     transform: rotate(360deg);
   }
 }
+
+.office-fan-blade-group {
+  transform-origin: 0 0;
+  animation-name: office-fan-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+}
+
+.office-device-group.active-fan .office-fan-blade-group {
+  animation-play-state: running;
+  filter: drop-shadow(0 0 8px rgb(34 211 238 / 0.35));
+}
+
+.office-light-glow-cone {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.office-device-group.active-light .office-light-glow-cone {
+  opacity: 1;
+}
+
+.office-hardware-bulb {
+  fill: #4b5563;
+  transition:
+    fill 0.3s ease,
+    filter 0.3s ease;
+}
+
+.office-device-group.active-light .office-hardware-bulb {
+  fill: #fef08a;
+  filter: drop-shadow(0 0 8px #facc15);
+}
