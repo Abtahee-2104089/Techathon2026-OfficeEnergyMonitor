@@ -15,9 +15,9 @@ The circuit models one room with:
 - 2 fans
 - 3 lights
 - 1 ESP32 microcontroller
-- 5 relay channels
+- 5 low-voltage output channels in Wokwi
 - 5 isolated/safe state inputs
-- Optional aggregate current sensing
+- relay/contactor modules and optional aggregate current sensing in the real-world design
 
 The full office uses the same pattern three times: Drawing Room, Work Room 1, and Work Room 2.
 
@@ -32,11 +32,11 @@ The representative design uses an ESP32 because it maps well to a real IoT syste
 
 ## Conceptual Design
 
-The Wokwi circuit uses LEDs as safe representative loads. In real hardware, fans and lights would be AC mains devices controlled through certified relay modules or contactors. State sensing should be isolated from mains using opto-isolators or safe low-voltage wall-switch feedback.
+The Wokwi circuit uses slide switches as safe device-state inputs and LEDs as low-voltage load indicators. This keeps the simulation readable and runnable. In real hardware, fans and lights would be AC mains devices controlled through certified relay modules or contactors. State sensing should be isolated from mains using opto-isolators or safe low-voltage wall-switch feedback.
 
 ## Pin Mapping
 
-| Device | Relay GPIO | Sense GPIO | Rated Watts |
+| Device | Output GPIO | Sense GPIO | Rated Watts |
 | --- | ---: | ---: | ---: |
 | Fan 1 | 16 | 32 | 60W |
 | Fan 2 | 17 | 33 | 60W |
@@ -47,12 +47,12 @@ The Wokwi circuit uses LEDs as safe representative loads. In real hardware, fans
 
 ## Connection List
 
-- Connect each relay input to an ESP32 output pin.
+- Connect each output indicator to an ESP32 output pin through a resistor in Wokwi.
 - Connect each isolated switch/state output to an ESP32 digital input pin.
 - Use pull-up resistors so inputs do not float.
 - Connect all grounds together.
 - In Wokwi, LEDs represent the final loads.
-- In real hardware, relay load-side wiring must be isolated from the ESP32 side.
+- In real hardware, these output pins should drive isolated relay modules; relay load-side wiring must be isolated from the ESP32 side.
 - Optionally route the room supply through an ACS712-style current sensor for aggregate current draw.
 
 ## Electrical Reasoning

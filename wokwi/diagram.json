@@ -1,53 +1,225 @@
 {
   "version": 1,
-  "author": "Techathon Office Energy Monitor",
+  "author": "Huntrix",
   "editor": "wokwi",
   "parts": [
-    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 20, "left": 20, "attrs": {} },
-    { "type": "wokwi-relay-module", "id": "relay1", "top": -20, "left": 360, "attrs": {} },
-    { "type": "wokwi-relay-module", "id": "relay2", "top": 80, "left": 360, "attrs": {} },
-    { "type": "wokwi-relay-module", "id": "relay3", "top": 180, "left": 360, "attrs": {} },
-    { "type": "wokwi-relay-module", "id": "relay4", "top": 280, "left": 360, "attrs": {} },
-    { "type": "wokwi-relay-module", "id": "relay5", "top": 380, "left": 360, "attrs": {} },
-    { "type": "wokwi-led", "id": "fan1", "top": 0, "left": 620, "attrs": { "color": "cyan", "label": "Fan 1 load" } },
-    { "type": "wokwi-led", "id": "fan2", "top": 100, "left": 620, "attrs": { "color": "cyan", "label": "Fan 2 load" } },
-    { "type": "wokwi-led", "id": "light1", "top": 200, "left": 620, "attrs": { "color": "yellow", "label": "Light 1 load" } },
-    { "type": "wokwi-led", "id": "light2", "top": 300, "left": 620, "attrs": { "color": "yellow", "label": "Light 2 load" } },
-    { "type": "wokwi-led", "id": "light3", "top": 400, "left": 620, "attrs": { "color": "yellow", "label": "Light 3 load" } },
-    { "type": "wokwi-slide-switch", "id": "sw1", "top": -55, "left": 210, "attrs": { "label": "Fan 1 sense" } },
-    { "type": "wokwi-slide-switch", "id": "sw2", "top": 45, "left": 210, "attrs": { "label": "Fan 2 sense" } },
-    { "type": "wokwi-slide-switch", "id": "sw3", "top": 145, "left": 210, "attrs": { "label": "Light 1 sense" } },
-    { "type": "wokwi-slide-switch", "id": "sw4", "top": 245, "left": 210, "attrs": { "label": "Light 2 sense" } },
-    { "type": "wokwi-slide-switch", "id": "sw5", "top": 345, "left": 210, "attrs": { "label": "Light 3 sense" } }
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 115.2,
+      "left": 14.4,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-text",
+      "id": "title",
+      "top": 0,
+      "left": 20,
+      "attrs": {
+        "text": "Drawing Room representative IoT circuit: 2 fans + 3 lights"
+      }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "senseLabel",
+      "top": 48,
+      "left": 245,
+      "attrs": {
+        "text": "Safe wall-switch/state inputs"
+      }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "loadLabel",
+      "top": 48,
+      "left": 560,
+      "attrs": {
+        "text": "Low-voltage load indicators"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "swFan1",
+      "top": 105.6,
+      "left": 278.4,
+      "attrs": {
+        "label": "Fan 1 state"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "swFan2",
+      "top": 172.8,
+      "left": 278.4,
+      "attrs": {
+        "label": "Fan 2 state"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "swLight1",
+      "top": 240,
+      "left": 278.4,
+      "attrs": {
+        "label": "Light 1 state"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "swLight2",
+      "top": 307.2,
+      "left": 278.4,
+      "attrs": {
+        "label": "Light 2 state"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "swLight3",
+      "top": 374.4,
+      "left": 278.4,
+      "attrs": {
+        "label": "Light 3 state"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledFan1",
+      "top": 105.6,
+      "left": 624,
+      "attrs": {
+        "color": "cyan",
+        "label": "Fan 1 60W"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledFan2",
+      "top": 172.8,
+      "left": 624,
+      "attrs": {
+        "color": "cyan",
+        "label": "Fan 2 60W"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledLight1",
+      "top": 240,
+      "left": 624,
+      "attrs": {
+        "color": "yellow",
+        "label": "Light 1 15W"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledLight2",
+      "top": 307.2,
+      "left": 624,
+      "attrs": {
+        "color": "yellow",
+        "label": "Light 2 15W"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledLight3",
+      "top": 374.4,
+      "left": 624,
+      "attrs": {
+        "color": "yellow",
+        "label": "Light 3 15W"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rFan1",
+      "top": 115.2,
+      "left": 523.2,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rFan2",
+      "top": 182.4,
+      "left": 523.2,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rLight1",
+      "top": 249.6,
+      "left": 523.2,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rLight2",
+      "top": 316.8,
+      "left": 523.2,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rLight3",
+      "top": 384,
+      "left": 523.2,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "note",
+      "top": 465,
+      "left": 245,
+      "attrs": {
+        "text": "In real hardware these outputs drive isolated relay/contactor modules; LEDs are safe Wokwi stand-ins."
+      }
+    }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
     [ "esp:RX", "$serialMonitor:TX", "", [] ],
-    [ "esp:16", "relay1:IN", "blue", [] ],
-    [ "esp:17", "relay2:IN", "blue", [] ],
-    [ "esp:18", "relay3:IN", "blue", [] ],
-    [ "esp:19", "relay4:IN", "blue", [] ],
-    [ "esp:21", "relay5:IN", "blue", [] ],
-    [ "esp:32", "sw1:2", "green", [] ],
-    [ "esp:33", "sw2:2", "green", [] ],
-    [ "esp:25", "sw3:2", "green", [] ],
-    [ "esp:26", "sw4:2", "green", [] ],
-    [ "esp:27", "sw5:2", "green", [] ],
-    [ "esp:GND.1", "sw1:1", "black", [] ],
-    [ "esp:GND.1", "sw2:1", "black", [] ],
-    [ "esp:GND.1", "sw3:1", "black", [] ],
-    [ "esp:GND.1", "sw4:1", "black", [] ],
-    [ "esp:GND.1", "sw5:1", "black", [] ],
-    [ "relay1:NO", "fan1:A", "red", [] ],
-    [ "relay2:NO", "fan2:A", "red", [] ],
-    [ "relay3:NO", "light1:A", "red", [] ],
-    [ "relay4:NO", "light2:A", "red", [] ],
-    [ "relay5:NO", "light3:A", "red", [] ],
-    [ "fan1:C", "esp:GND.2", "black", [] ],
-    [ "fan2:C", "esp:GND.2", "black", [] ],
-    [ "light1:C", "esp:GND.2", "black", [] ],
-    [ "light2:C", "esp:GND.2", "black", [] ],
-    [ "light3:C", "esp:GND.2", "black", [] ]
+
+    [ "esp:32", "swFan1:2", "green", [ "h-24", "v-120" ] ],
+    [ "esp:33", "swFan2:2", "green", [ "h-30", "v-80" ] ],
+    [ "esp:25", "swLight1:2", "green", [ "h-36", "v-38" ] ],
+    [ "esp:26", "swLight2:2", "green", [ "h-42", "v16" ] ],
+    [ "esp:27", "swLight3:2", "green", [ "h-48", "v64" ] ],
+
+    [ "swFan1:1", "esp:GND.1", "black", [ "v-20", "h-245", "v150" ] ],
+    [ "swFan2:1", "esp:GND.1", "black", [ "v-18", "h-245", "v86" ] ],
+    [ "swLight1:1", "esp:GND.1", "black", [ "v-16", "h-245", "v20" ] ],
+    [ "swLight2:1", "esp:GND.1", "black", [ "v-14", "h-245", "v-48" ] ],
+    [ "swLight3:1", "esp:GND.1", "black", [ "v-12", "h-245", "v-115" ] ],
+
+    [ "esp:16", "rFan1:1", "blue", [ "h180", "v-160" ] ],
+    [ "esp:17", "rFan2:1", "blue", [ "h188", "v-108" ] ],
+    [ "esp:18", "rLight1:1", "blue", [ "h196", "v-58" ] ],
+    [ "esp:19", "rLight2:1", "blue", [ "h204", "v-8" ] ],
+    [ "esp:21", "rLight3:1", "blue", [ "h212", "v42" ] ],
+
+    [ "rFan1:2", "ledFan1:A", "blue", [] ],
+    [ "rFan2:2", "ledFan2:A", "blue", [] ],
+    [ "rLight1:2", "ledLight1:A", "blue", [] ],
+    [ "rLight2:2", "ledLight2:A", "blue", [] ],
+    [ "rLight3:2", "ledLight3:A", "blue", [] ],
+
+    [ "ledFan1:C", "esp:GND.2", "black", [ "h80", "v230", "h-655", "v-10" ] ],
+    [ "ledFan2:C", "esp:GND.2", "black", [ "h72", "v165", "h-647", "v55" ] ],
+    [ "ledLight1:C", "esp:GND.2", "black", [ "h64", "v100", "h-639", "v120" ] ],
+    [ "ledLight2:C", "esp:GND.2", "black", [ "h56", "v35", "h-631", "v185" ] ],
+    [ "ledLight3:C", "esp:GND.2", "black", [ "h48", "v-30", "h-623", "v250" ] ]
   ],
   "dependencies": {}
 }
