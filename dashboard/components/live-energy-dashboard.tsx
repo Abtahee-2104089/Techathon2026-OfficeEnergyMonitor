@@ -114,41 +114,41 @@ export function LiveEnergyDashboard() {
       <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 p-4 sm:p-6">
         <header className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="flex flex-col gap-3">
-            <Badge variant="secondary" className="w-fit">
-              <IconSparkles data-icon="inline-start" />
-              Techathon energy command center
-            </Badge>
             <div className="flex flex-col gap-2">
-              <h1 className="max-w-4xl text-3xl font-semibold tracking-normal sm:text-5xl">
-                Live Office Energy Monitor
+              <h1 className="max-w-4xl text-3xl font-semibold tracking-normal sm:text-4xl">
+                Energy operations
               </h1>
-              <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-                A single simulated IoT backend feeds this dashboard and the
-                Discord bot, so room status, alerts, and power readings stay in
-                sync.
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <ConnectionBadge connection={connection} />
+                <Badge variant={state.isAfterHours ? "destructive" : "outline"}>
+                  {state.isAfterHours ? "After hours" : "Office hours"}
+                </Badge>
+                <Badge variant="outline">
+                  {state.rooms.length || 3} rooms monitored
+                </Badge>
+              </div>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:min-w-[620px]">
             <MetricCard
               icon={<IconBolt />}
-              label="Current Load"
+              label="Load"
               value={`${state.totalWatts}W`}
             />
             <MetricCard
               icon={<IconPlugConnected />}
-              label="Active Devices"
+              label="Devices On"
               value={`${state.activeDevices}/${state.deviceCount}`}
             />
             <MetricCard
               icon={<IconAlertTriangle />}
-              label="Alerts"
+              label="Open Alerts"
               value={`${state.alerts.length}`}
             />
             <MetricCard
               icon={<IconClock />}
-              label="Live Clock"
+              label="Office Time"
               value={state.simulatedClock}
             />
           </div>
@@ -158,7 +158,6 @@ export function LiveEnergyDashboard() {
           <div className="flex flex-col gap-5">
             <ControlCard
               activeRatio={activeRatio}
-              connection={connection}
               estimatedTodayKwh={state.estimatedTodayKwh}
               generatedAt={state.generatedAt}
               isAfterHours={state.isAfterHours}
@@ -291,13 +290,11 @@ function MetricCard({
 
 function ControlCard({
   activeRatio,
-  connection,
   estimatedTodayKwh,
   generatedAt,
   isAfterHours,
 }: {
   activeRatio: number
-  connection: "connecting" | "live" | "offline"
   estimatedTodayKwh: number
   generatedAt: string
   isAfterHours: boolean
@@ -305,11 +302,7 @@ function ControlCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Live system status</CardTitle>
-        <CardDescription>
-          Polling the shared backend every 2.5 seconds for demo-safe real-time
-          updates.
-        </CardDescription>
+        <CardTitle>Operations status</CardTitle>
         <CardAction>
           <Button
             variant="outline"
@@ -324,26 +317,23 @@ function ControlCard({
       <CardContent className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <ConnectionBadge connection={connection} />
+            <Badge variant="outline">
+              Last update{" "}
+              {generatedAt === initialEnergyState.generatedAt
+                ? "pending"
+                : formatTimestamp(generatedAt)}
+            </Badge>
             <Badge variant={isAfterHours ? "destructive" : "secondary"}>
-              {isAfterHours ? "After-hours monitoring" : "Inside office hours"}
+              {isAfterHours ? "Unoccupied schedule" : "Occupied schedule"}
             </Badge>
           </div>
-          <Progress value={activeRatio}>
-            <div className="flex w-full items-center justify-between gap-3 text-sm">
-              <span className="font-medium">Active device ratio</span>
-              <span className="text-muted-foreground tabular-nums">
-                {activeRatio}%
-              </span>
-            </div>
-          </Progress>
-          <p className="text-xs text-muted-foreground">
-            Last sync{" "}
-            {generatedAt === initialEnergyState.generatedAt
-              ? "pending"
-              : formatTimestamp(generatedAt)}
-            .
-          </p>
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="font-medium">Active device ratio</span>
+            <span className="text-muted-foreground tabular-nums">
+              {activeRatio}%
+            </span>
+          </div>
+          <Progress value={activeRatio} />
         </div>
 
         <div className="rounded-lg border bg-muted p-4">
@@ -363,7 +353,7 @@ function ConnectionBadge({
   connection: "connecting" | "live" | "offline"
 }) {
   if (connection === "live") {
-    return <Badge>Live API feed</Badge>
+    return <Badge>Live</Badge>
   }
 
   if (connection === "offline") {
@@ -379,11 +369,9 @@ function OfficeMap({ rooms }: { rooms: RoomSummary[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <IconLayoutDashboard data-icon="inline-start" />
-          Top-view office layout
+          Floor plan
         </CardTitle>
-        <CardDescription>
-          Lights glow and fans spin when devices are on.
-        </CardDescription>
+        <CardDescription>Realtime room load and device state</CardDescription>
       </CardHeader>
       <CardContent>
         {rooms.length ? (
@@ -465,11 +453,9 @@ function DiscordPreview({ state }: { state: EnergyState }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <IconRobot data-icon="inline-start" />
-          Discord bot preview
+          Bot command response
         </CardTitle>
-        <CardDescription>
-          Same `/api/state` contract, humanized output.
-        </CardDescription>
+        <CardDescription>Live response for `!status`</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="rounded-lg border bg-muted p-3 font-mono text-xs">
@@ -494,9 +480,7 @@ export function DeviceTable({ rooms }: { rooms: RoomSummary[] }) {
     <Card>
       <CardHeader>
         <CardTitle>Live device status</CardTitle>
-        <CardDescription>
-          All devices exposed by the shared backend.
-        </CardDescription>
+        <CardDescription>Room assignment, relay state, and load</CardDescription>
       </CardHeader>
       <CardContent>
         {devices.length ? (

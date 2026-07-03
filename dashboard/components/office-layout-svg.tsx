@@ -84,7 +84,7 @@ function getFanDuration(device?: Device) {
 
 export function OfficeLayoutSvg({ rooms: liveRooms }: { rooms: RoomSummary[] }) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-[#090d16]">
+    <div className="overflow-hidden rounded-lg border bg-card">
       <svg
         role="img"
         aria-label="Live office IoT blueprint map"
@@ -93,13 +93,25 @@ export function OfficeLayoutSvg({ rooms: liveRooms }: { rooms: RoomSummary[] }) 
       >
         <defs>
           <radialGradient id="office-beam-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fef08a" stopOpacity="0.3" />
-            <stop offset="60%" stopColor="#eab308" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="#eab308" stopOpacity="0" />
+            <stop
+              offset="0%"
+              stopColor="var(--office-map-light-beam)"
+              stopOpacity="0.36"
+            />
+            <stop
+              offset="60%"
+              stopColor="var(--office-map-light-beam)"
+              stopOpacity="0.12"
+            />
+            <stop
+              offset="100%"
+              stopColor="var(--office-map-light-beam)"
+              stopOpacity="0"
+            />
           </radialGradient>
         </defs>
 
-        <rect width="900" height="480" fill="#090d16" />
+        <rect width="900" height="480" fill="var(--office-map-bg)" />
         <BlueprintGrid />
         <Architecture />
 
@@ -118,7 +130,7 @@ export function OfficeLayoutSvg({ rooms: liveRooms }: { rooms: RoomSummary[] }) 
 
 function BlueprintGrid() {
   return (
-    <g stroke="#111827" strokeWidth="1">
+    <g stroke="var(--office-map-grid)" strokeWidth="1">
       <path d="M0,60 H900 M0,120 H900 M0,180 H900 M0,240 H900 M0,300 H900 M0,360 H900 M0,420 H900" />
       <path d="M100,0 V480 M200,0 V480 M300,0 V480 M400,0 V480 M500,0 V480 M600,0 V480 M700,0 V480 M800,0 V480" />
     </g>
@@ -128,18 +140,28 @@ function BlueprintGrid() {
 function Architecture() {
   return (
     <>
-      <g stroke="#374151" strokeLinecap="round" strokeWidth="4" fill="none">
+      <g
+        stroke="var(--office-map-wall)"
+        strokeLinecap="round"
+        strokeWidth="4"
+        fill="none"
+      >
         <path d="M 20 400 L 20 20 L 880 20 L 880 400 L 750 400 M 650 400 L 480 400 M 380 400 L 210 400 M 110 400 L 20 400" />
         <path d="M 300 20 L 300 400" />
         <path d="M 590 20 L 590 400" />
       </g>
-      <g stroke="#1f2937" strokeWidth="1.5" fill="none" opacity="0.9">
+      <g
+        stroke="var(--office-map-detail)"
+        strokeWidth="1.5"
+        fill="none"
+        opacity="0.9"
+      >
         <path d="M112 400 A88 88 0 0 1 200 312" />
         <path d="M382 400 A84 84 0 0 1 466 316" />
         <path d="M652 400 A84 84 0 0 1 736 316" />
         <path d="M480 400 A76 76 0 0 1 556 324" />
       </g>
-      <g fill="#111827" stroke="#1f2937">
+      <g fill="var(--office-map-fixture)" stroke="var(--office-map-detail)">
         <rect x="40" y="120" width="30" height="140" rx="4" />
         <rect x="338" y="160" width="72" height="44" rx="4" />
         <rect x="482" y="160" width="72" height="44" rx="4" />
@@ -164,7 +186,7 @@ function RoomLayer({
       <text
         x={blueprint.centerX}
         y="50"
-        fill="#6b7280"
+        fill="var(--office-map-label)"
         fontSize="12"
         fontWeight="700"
         letterSpacing="2"
@@ -175,7 +197,7 @@ function RoomLayer({
       <text
         x={blueprint.centerX}
         y="72"
-        fill="#9ca3af"
+        fill="var(--office-map-muted)"
         fontSize="12"
         fontWeight="600"
         textAnchor="middle"
@@ -243,7 +265,11 @@ function FanNode({ point, device }: { point: DevicePoint; device?: Device }) {
     >
       <g
         className="office-fan-blade-group"
-        stroke={active ? "#22d3ee" : "#4b5563"}
+        stroke={
+          active
+            ? "var(--office-map-fan-active)"
+            : "var(--office-map-device-idle)"
+        }
         strokeLinecap="round"
         strokeWidth="5"
         style={style}
@@ -252,7 +278,13 @@ function FanNode({ point, device }: { point: DevicePoint; device?: Device }) {
         <line x1="0" y1="0" x2="22" y2="13" />
         <line x1="0" y1="0" x2="-22" y2="13" />
       </g>
-      <circle cx="0" cy="0" r="6" fill="#020617" stroke="#9ca3af" />
+      <circle
+        cx="0"
+        cy="0"
+        r="6"
+        fill="var(--office-map-bg)"
+        stroke="var(--office-map-muted)"
+      />
       <title>
         {point.label}: {device?.status ?? "unknown"}
         {active ? `, ${getFanDuration(device)} rotation` : ""}

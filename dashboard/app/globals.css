@@ -80,6 +80,18 @@
     --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
     --sidebar-border: oklch(0.92 0.004 286.32);
     --sidebar-ring: oklch(0.705 0.015 286.067);
+    --office-map-bg: oklch(0.985 0.002 286.35);
+    --office-map-grid: oklch(0.92 0.004 286.32);
+    --office-map-wall: oklch(0.552 0.016 285.938);
+    --office-map-detail: oklch(0.84 0.006 286.2);
+    --office-map-fixture: oklch(0.955 0.002 286.35);
+    --office-map-label: oklch(0.36 0.012 285.9);
+    --office-map-muted: oklch(0.552 0.016 285.938);
+    --office-map-device-idle: oklch(0.62 0.02 285.9);
+    --office-map-fan-active: var(--chart-3);
+    --office-map-light-beam: oklch(0.86 0.18 85);
+    --office-map-light-off: oklch(0.72 0.01 286);
+    --office-map-light-on: oklch(0.93 0.16 95);
 }
 
 .dark {
@@ -114,6 +126,18 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.552 0.016 285.938);
+    --office-map-bg: oklch(0.18 0.006 285.9);
+    --office-map-grid: oklch(1 0 0 / 8%);
+    --office-map-wall: oklch(0.62 0.02 285.9);
+    --office-map-detail: oklch(1 0 0 / 12%);
+    --office-map-fixture: oklch(0.23 0.006 286.1);
+    --office-map-label: oklch(0.76 0.015 286);
+    --office-map-muted: oklch(0.705 0.015 286.067);
+    --office-map-device-idle: oklch(0.58 0.018 286);
+    --office-map-fan-active: var(--chart-2);
+    --office-map-light-beam: oklch(0.86 0.18 85);
+    --office-map-light-off: oklch(0.38 0.01 286);
+    --office-map-light-on: oklch(0.93 0.16 95);
 }
 
 @layer base {
@@ -151,7 +175,7 @@
 
 .office-device-group.active-fan .office-fan-blade-group {
   animation-play-state: running;
-  filter: drop-shadow(0 0 8px rgb(34 211 238 / 0.35));
+  filter: drop-shadow(0 0 8px var(--office-map-fan-active));
 }
 
 .office-light-glow-cone {
@@ -165,13 +189,13 @@
 }
 
 .office-hardware-bulb {
-  fill: #4b5563;
+  fill: var(--office-map-light-off);
   transition:
     fill 0.3s ease,
     filter 0.3s ease;
 }
 
 .office-device-group.active-light .office-hardware-bulb {
-  fill: #fef08a;
-  filter: drop-shadow(0 0 8px #facc15);
+  fill: var(--office-map-light-on);
+  filter: drop-shadow(0 0 8px var(--office-map-light-beam));
 }

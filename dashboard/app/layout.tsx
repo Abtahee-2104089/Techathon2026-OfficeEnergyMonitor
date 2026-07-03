@@ -15,9 +15,8 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Live Office Energy Monitor",
-  description:
-    "Real-time simulated IoT dashboard for office lights, fans, alerts, and power usage.",
+  title: "Energy Operations",
+  description: "Office energy operations dashboard.",
 }
 
 export default function RootLayout({

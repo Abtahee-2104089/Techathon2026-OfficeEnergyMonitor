@@ -19,12 +19,10 @@ export default function DevicesPage() {
       <Card>
         <CardHeader>
           <CardTitle>Device Registry</CardTitle>
-          <CardDescription>
-            Every light and fan currently exposed by the shared backend.
-          </CardDescription>
+          <CardDescription>Relay state and room assignment</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          <Badge>{connection === "live" ? "Live API feed" : connection}</Badge>
+          <Badge>{connection === "live" ? "Live" : connection}</Badge>
           <Badge variant="secondary">{state.activeDevices} active</Badge>
           <Badge variant="outline">{state.deviceCount} total devices</Badge>
         </CardContent>

@@ -58,7 +58,7 @@ export function AppSidebar() {
               </span>
               <span className="grid flex-1 text-left leading-tight">
                 <span className="truncate font-semibold">Energy Monitor</span>
-                <span className="truncate text-xs">Techathon 2026</span>
+                <span className="truncate text-xs">Office Floor A</span>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -87,13 +87,13 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Live feeds</SidebarGroupLabel>
+          <SidebarGroupLabel>Integrations</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Backend API">
+                <SidebarMenuButton tooltip="State API">
                   <IconActivity />
-                  <span>Shared API</span>
+                  <span>State API</span>
                 </SidebarMenuButton>
                 <SidebarMenuBadge>1</SidebarMenuBadge>
               </SidebarMenuItem>
@@ -112,7 +112,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Single source of truth">
+            <SidebarMenuButton tooltip="Monitored equipment">
               <IconBolt />
               <span>15 live devices</span>
             </SidebarMenuButton>
