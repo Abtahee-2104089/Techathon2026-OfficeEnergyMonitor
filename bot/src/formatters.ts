@@ -73,7 +73,7 @@ export function formatDevices(state: EnergyState) {
 
 export function formatOffHours(state: EnergyState) {
   if (!state.isAfterHours) {
-    return `It is office hours on the simulator clock (${state.simulatedClock}). I will flag devices after 5 PM or before 9 AM.`
+    return `It is inside office hours on the Dhaka simulator clock (${state.simulatedClock}). I flag devices outside the 9 to 5 window.`
   }
 
   const activeRooms = state.rooms.filter((room) => room.activeDevices > 0)

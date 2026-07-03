@@ -58,6 +58,11 @@ type DeviceDefinition = {
   phase: number
 }
 
+const DHAKA_TIME_ZONE = "Asia/Dhaka"
+const DEVICE_TOGGLE_MS = 1500
+const OFFICE_OPEN_HOUR = 9
+const OFFICE_CLOSE_HOUR = 17
+
 const rooms: Array<{ id: RoomId; name: string }> = [
   { id: "drawing-room", name: "Drawing Room" },
   { id: "work-room-1", name: "Work Room 1" },
@@ -116,27 +121,41 @@ const definitions: DeviceDefinition[] = rooms.flatMap((room, roomIndex) => {
   ]
 })
 
-function minutesSinceEpoch(date: Date) {
-  return Math.floor(date.getTime() / 60000)
+function toggleTick(date: Date) {
+  return Math.floor(date.getTime() / DEVICE_TOGGLE_MS)
 }
 
-function isDeviceOn(device: DeviceDefinition, minute: number) {
-  const cycle = 18 + (device.phase % 9)
-  const position = (minute + device.phase) % cycle
-  const activeWindow = device.type === "fan" ? 9 : 7
+function hashDeviceTick(device: DeviceDefinition, tick: number) {
+  const seed = tick * 1103515245 + device.phase * 2654435761
+  const mixed = Math.sin(seed) * 10000
 
-  return position < activeWindow
+  return mixed - Math.floor(mixed)
 }
 
-function lastChangedAt(device: DeviceDefinition, now: Date, minute: number) {
-  const cycle = 18 + (device.phase % 9)
-  const position = (minute + device.phase) % cycle
+function isDeviceOn(device: DeviceDefinition, tick: number) {
+  const randomValue = hashDeviceTick(device, tick)
+  const threshold = device.type === "fan" ? 0.36 : 0.46
 
-  return new Date(now.getTime() - position * 60000)
+  return randomValue < threshold
+}
+
+function lastChangedAt(device: DeviceDefinition, now: Date, tick: number) {
+  const currentState = isDeviceOn(device, tick)
+  let ticksAgo = 0
+
+  while (
+    ticksAgo < 80 &&
+    isDeviceOn(device, tick - ticksAgo) === currentState
+  ) {
+    ticksAgo += 1
+  }
+
+  return new Date(now.getTime() - ticksAgo * DEVICE_TOGGLE_MS)
 }
 
 function formatTime(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
+    timeZone: DHAKA_TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -144,12 +163,22 @@ function formatTime(date: Date) {
   }).format(date)
 }
 
+function getDhakaHour(date: Date) {
+  const hour = new Intl.DateTimeFormat("en-GB", {
+    timeZone: DHAKA_TIME_ZONE,
+    hour: "numeric",
+    hour12: false,
+  }).format(date)
+
+  return Number(hour)
+}
+
 function buildDevices(now: Date): Device[] {
-  const minute = minutesSinceEpoch(now)
+  const tick = toggleTick(now)
 
   return definitions.map((definition) => {
-    const isOn = isDeviceOn(definition, minute)
-    const changedAt = lastChangedAt(definition, now, minute)
+    const isOn = isDeviceOn(definition, tick)
+    const changedAt = lastChangedAt(definition, now, tick)
 
     return {
       id: definition.id,
@@ -252,8 +281,8 @@ export function getEnergyState(now = new Date()): EnergyState {
     }
   })
 
-  const hour = now.getHours()
-  const isAfterHours = hour < 9 || hour >= 17
+  const hour = getDhakaHour(now)
+  const isAfterHours = hour < OFFICE_OPEN_HOUR || hour >= OFFICE_CLOSE_HOUR
   const totalWatts = roomSummaries.reduce(
     (sum, room) => sum + room.totalWatts,
     0

@@ -128,7 +128,7 @@ Returns an AI-generated operational recommendation using OpenRouter when `OPENRO
 
 ## Alert Rules
 
-- Device on after office hours, assuming office hours are 9:00 AM to 5:00 PM.
+- Device on after office hours, assuming office hours are 9 to 5 in Asia/Dhaka time.
 - All devices in one room on for more than 2 hours.
 - Optional: unusually high total watt usage.
 

@@ -40,7 +40,7 @@ export default function AlertsPage() {
         <RuleCard
           icon={<IconClockHour4 />}
           title="Office hours"
-          detail="9:00 AM to 5:00 PM. Any active device outside that window is flagged."
+          detail="9 to 5 in Asia/Dhaka time. Any active device outside that window is flagged."
         />
         <RuleCard
           icon={<IconAlertTriangle />}

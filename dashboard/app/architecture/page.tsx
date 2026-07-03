@@ -1,6 +1,10 @@
+import { IconExternalLink } from "@tabler/icons-react"
+
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -236,6 +240,9 @@ flowchart LR
   bot --> api
 `
 
+const repoBase = "https://github.com/Seyamalam/Techathon2026-Huntrix/blob/main"
+const architectureSourceHref = `${repoBase}/dashboard/app/architecture/page.tsx`
+
 export default function ArchitecturePage() {
   return (
     <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 p-4 sm:p-6">
@@ -252,26 +259,31 @@ export default function ArchitecturePage() {
         title="Whole System Diagram"
         description="Complete flow from office device state to backend, dashboard, Discord bot, alerts, and AI summaries."
         chart={wholeSystemDiagram}
+        sourceHref={architectureSourceHref}
       />
       <DiagramCard
         title="IoT Hardware Diagram"
         description="Representative Wokwi/ESP32 circuit, safe inputs, relay channels, load devices, and telemetry payload."
         chart={iotDiagram}
+        sourceHref={architectureSourceHref}
       />
       <DiagramCard
         title="Web Dashboard Diagram"
         description="Next.js routes, API routes, simulator, alert builder, InstantDB sync, and visual dashboard pages."
         chart={webDiagram}
+        sourceHref={architectureSourceHref}
       />
       <DiagramCard
         title="Discord Bot And AI Diagram"
         description="Command lifecycle, shared state fetch, deterministic fallback, LLM humanization, and proactive alerts."
         chart={botDiagram}
+        sourceHref={architectureSourceHref}
       />
       <DiagramCard
         title="Deployment Diagram"
         description="Vercel root directory, build commands, dashboard deployment, bot runtime, and environment variables."
         chart={deploymentDiagram}
+        sourceHref={architectureSourceHref}
       />
     </main>
   )
@@ -281,16 +293,34 @@ function DiagramCard({
   title,
   description,
   chart,
+  sourceHref,
 }: {
   title: string
   description: string
   chart: string
+  sourceHref: string
 }) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
+        <CardAction>
+          <Button
+            variant="ghost"
+            size="icon"
+            render={
+              <a
+                href={sourceHref}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Open ${title} source in GitHub`}
+              />
+            }
+          >
+            <IconExternalLink />
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <MermaidDiagram chart={chart} />

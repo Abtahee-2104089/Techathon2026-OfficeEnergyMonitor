@@ -1,5 +1,6 @@
 export function formatTime(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Dhaka",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",

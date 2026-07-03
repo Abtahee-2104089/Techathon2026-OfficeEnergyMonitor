@@ -52,7 +52,7 @@ export function useEnergyState() {
     }
 
     loadState()
-    const timer = window.setInterval(loadState, 2500)
+    const timer = window.setInterval(loadState, 1500)
 
     return () => {
       active = false

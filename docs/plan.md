@@ -16,7 +16,7 @@ Build a fast, polished, real-time office energy monitoring system with:
 - The fixed office setup is authoritative: 3 rooms, each with 2 fans and 3 lights, for 15 total devices.
 - No physical hardware is required.
 - A representative one-room circuit schematic is enough.
-- Office hours are 9:00 AM to 5:00 PM.
+- Office hours are 9 to 5 in Asia/Dhaka time.
 - The preliminary round is judged from the repository, documentation, code, and demo video.
 
 ## Scoring Strategy

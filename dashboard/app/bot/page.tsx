@@ -52,7 +52,7 @@ const commands = [
   },
   {
     command: "!offhours",
-    purpose: "Checks the 9 AM to 5 PM schedule rule.",
+    purpose: "Checks the 9 to 5 Dhaka schedule rule.",
   },
 ]
 

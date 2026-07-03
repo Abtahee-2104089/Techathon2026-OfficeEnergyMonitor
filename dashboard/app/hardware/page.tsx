@@ -1,6 +1,7 @@
 import { IconCircuitBulb, IconExternalLink } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -18,6 +19,8 @@ import {
 } from "@/components/ui/table"
 import { WokwiCircuitPreview } from "@/components/wokwi-circuit-preview"
 import { hardwareDevices } from "@/lib/hardware-circuit"
+
+const repoBase = "https://github.com/Seyamalam/Techathon2026-Huntrix/blob/main"
 
 export default function HardwarePage() {
   return (
@@ -101,10 +104,22 @@ export default function HardwarePage() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 text-sm md:grid-cols-2 xl:grid-cols-4">
-              <FileLine path="wokwi/diagram.json" />
-              <FileLine path="wokwi/sketch.ino" />
-              <FileLine path="docs/hardware-schematic.md" />
-              <FileLine path="docs/assets/one-room-hardware-schematic.svg" />
+              <FileLine
+                path="wokwi/diagram.json"
+                href={`${repoBase}/wokwi/diagram.json`}
+              />
+              <FileLine
+                path="wokwi/sketch.ino"
+                href={`${repoBase}/wokwi/sketch.ino`}
+              />
+              <FileLine
+                path="docs/hardware-schematic.md"
+                href={`${repoBase}/docs/hardware-schematic.md`}
+              />
+              <FileLine
+                path="docs/assets/one-room-hardware-schematic.svg"
+                href={`${repoBase}/docs/assets/one-room-hardware-schematic.svg`}
+              />
             </div>
           </CardContent>
         </Card>
@@ -113,11 +128,24 @@ export default function HardwarePage() {
   )
 }
 
-function FileLine({ path }: { path: string }) {
+function FileLine({ path, href }: { path: string; href: string }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted p-3">
       <code className="truncate text-xs">{path}</code>
-      <IconExternalLink className="text-muted-foreground" />
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        render={
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open ${path} in GitHub`}
+          />
+        }
+      >
+        <IconExternalLink />
+      </Button>
     </div>
   )
 }
