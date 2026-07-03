@@ -16,10 +16,10 @@ export function formatStatus(state: EnergyState) {
   const roomLines = state.rooms.map(formatDeviceCounts).join(". ")
   const alertText =
     state.alerts.length > 0
-      ? ` I also see ${plural(state.alerts.length, "active alert")}.`
-      : " No active alerts right now."
+      ? ` There ${state.alerts.length === 1 ? "is" : "are"} also ${plural(state.alerts.length, "active alert")} worth checking.`
+      : " No alerts are active right now."
 
-  return `Here's the office snapshot: ${roomLines}. Total load is ${state.totalWatts}W.${alertText}`
+  return `Right now the office is pulling ${state.totalWatts}W. ${roomLines}.${alertText}`
 }
 
 export function formatRoom(room: RoomSummary) {
@@ -33,7 +33,7 @@ export function formatRoom(room: RoomSummary) {
     .map((device) => `${device.name} (${device.watts}W)`)
     .join(", ")
 
-  return `${room.name} is drawing ${room.totalWatts}W. Currently on: ${deviceList}.`
+  return `${room.name} is using ${room.totalWatts}W right now. The devices still on are ${deviceList}.`
 }
 
 export function formatUsage(state: EnergyState) {
@@ -41,7 +41,7 @@ export function formatUsage(state: EnergyState) {
     .map((room) => `${room.name}: ${room.totalWatts}W`)
     .join(", ")
 
-  return `Total power right now: ${state.totalWatts}W. Today's estimated usage: ${state.estimatedTodayKwh.toFixed(2)} kWh. Room breakdown: ${roomBreakdown}.`
+  return `The live load is ${state.totalWatts}W, with today's estimate at ${state.estimatedTodayKwh.toFixed(2)} kWh so far. By room: ${roomBreakdown}.`
 }
 
 export function formatAlerts(state: EnergyState) {

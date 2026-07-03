@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useId, useState } from "react"
-import mermaid from "mermaid"
 
 import { cn } from "@/lib/utils"
 
@@ -20,26 +19,19 @@ export function MermaidDiagram({
   useEffect(() => {
     let active = true
 
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: "strict",
-      theme: "base",
-      themeVariables: {
-        background: "transparent",
-        primaryColor: "hsl(var(--card))",
-        primaryTextColor: "hsl(var(--card-foreground))",
-        primaryBorderColor: "hsl(var(--border))",
-        lineColor: "hsl(var(--foreground))",
-        secondaryColor: "hsl(var(--muted))",
-        tertiaryColor: "hsl(var(--background))",
-        noteBkgColor: "hsl(var(--muted))",
-        noteTextColor: "hsl(var(--muted-foreground))",
-        fontFamily: "inherit",
-      },
-    })
-
     async function renderDiagram() {
       try {
+        const mermaid = (await import("mermaid")).default
+
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "loose",
+          theme: "dark",
+          flowchart: {
+            htmlLabels: true,
+          },
+        })
+
         const result = await mermaid.render(diagramId, chart)
 
         if (active) {
@@ -67,8 +59,8 @@ export function MermaidDiagram({
 
   if (error) {
     return (
-      <pre className="overflow-auto rounded-lg border bg-muted p-4 text-xs text-muted-foreground">
-        {error}
+      <pre className="overflow-auto rounded-lg border bg-muted p-4 text-xs leading-5 text-muted-foreground">
+        {`Mermaid render fallback: ${error}\n\n${chart.trim()}`}
       </pre>
     )
   }

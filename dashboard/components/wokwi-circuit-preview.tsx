@@ -1,7 +1,7 @@
 "use client"
 
 import type {} from "@wokwi/elements"
-import type React from "react"
+import type { ReactNode } from "react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Badge } from "@/components/ui/badge"
@@ -58,212 +58,191 @@ export function WokwiCircuitPreview() {
         </div>
       </div>
 
-      <div className="relative aspect-[900/560] min-h-[360px] bg-background">
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 900 560"
-          className="absolute inset-0 h-full w-full"
-        >
-          <defs>
-            <filter id="wireGlow" x="-25%" y="-25%" width="150%" height="150%">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <text x="28" y="46" className="fill-foreground text-lg font-semibold">
-            ESP32 relay and state-sensing circuit
-          </text>
-          <text x="28" y="74" className="fill-muted-foreground text-sm">
-            Same Drawing Room device IDs and wattages as the simulator
-          </text>
-
-          <ColumnLabel x={286} y={112} label="Sense inputs" />
-          <ColumnLabel x={500} y={112} label="Relay board" />
-          <ColumnLabel x={712} y={112} label="Loads" />
-
-          {hardwareDevices.map((device) => {
-            const live = liveDevices.get(device.id)
-            const isOn = live?.status === "on"
-
-            return (
-              <g key={device.id}>
-                <Wire d={`M175 ${device.y + 32} H282`} active={isOn} />
-                <Wire d={`M402 ${device.y + 32} H500`} active={isOn} />
-                <Wire d={`M612 ${device.y + 32} H702`} active={isOn} />
-                <Wire d={`M760 ${device.y + 32} H830 V500 H175 V455`} />
-              </g>
-            )
-          })}
-
-          <path
-            d="M175 455 V500 H830"
-            fill="none"
-            stroke="var(--border)"
-            strokeWidth="3"
-          />
-          <text x="735" y="522" className="fill-muted-foreground text-xs">
-            common ground return
-          </text>
-        </svg>
-
-        <PartFrame className="left-[35px] top-[145px] w-[170px]">
-          {ready ? (
-            <wokwi-esp32-devkit-v1 ledPower led1={activeCount > 0} />
-          ) : (
-            <Fallback label="ESP32" />
-          )}
-        </PartFrame>
-
-        {hardwareDevices.map((device) => {
-          const live = liveDevices.get(device.id)
-          const isOn = live?.status === "on"
-
-          return (
-            <div key={device.id}>
-              <PartFrame
-                className="w-[105px]"
-                style={{ left: 290, top: device.y }}
-              >
-                {ready ? (
-                  <wokwi-slide-switch value={isOn ? 1 : 0} />
-                ) : (
-                  <Fallback label="SW" />
-                )}
-              </PartFrame>
-              <DeviceLabel
-                className="left-[282px]"
-                style={{ top: device.y + 56 }}
-                primary={device.name}
-                secondary={device.sense}
-              />
-
-              <PartFrame
-                className="w-[68px]"
-                style={{ left: 424, top: device.y + 19 }}
-              >
-                {ready ? <wokwi-resistor value="220" /> : <Fallback label="R" />}
-              </PartFrame>
-
-              <PartFrame
-                className="w-[76px]"
-                style={{ left: 520, top: device.y + 10 }}
-              >
-                {ready ? <wokwi-ks2e-m-dc5 /> : <Fallback label="Relay" />}
-              </PartFrame>
-              <DeviceLabel
-                className="left-[505px]"
-                style={{ top: device.y + 68 }}
-                primary={`${device.relay} relay`}
-                secondary={device.output}
-              />
-
-              <PartFrame
-                className={cn(
-                  "w-[58px] rounded-full",
-                  isOn && "shadow-[0_0_28px_hsl(var(--primary)/0.55)]"
-                )}
-                style={{ left: 708, top: device.y + 12 }}
-              >
-                {ready ? (
-                  <wokwi-led
-                    color={device.ledColor}
-                    value={isOn}
-                    brightness={isOn ? 1 : 0.08}
-                    label=""
-                  />
-                ) : (
-                  <Fallback label="LED" />
-                )}
-              </PartFrame>
-              <DeviceLabel
-                className="left-[772px] w-[120px]"
-                style={{ top: device.y + 15 }}
-                primary={`${device.name} ${device.ratedWatts}W`}
-                secondary={device.id}
-              />
+      <div className="overflow-x-auto bg-background">
+        <div className="min-w-[1040px] p-5">
+          <div className="mb-5">
+            <div className="text-xl font-semibold">
+              ESP32 relay and state-sensing circuit
             </div>
-          )
-        })}
+            <div className="text-sm text-muted-foreground">
+              Same Drawing Room device IDs and wattages as the simulator.
+            </div>
+          </div>
 
-        <div className="absolute bottom-5 left-[292px] w-[420px] rounded-lg border bg-card p-3 text-xs text-card-foreground shadow-sm">
-          <div className="font-medium">Serial payload example</div>
-          <code className="mt-1 block truncate text-muted-foreground">
-            {"{\"id\":\"drawing-room-fan-1\",\"status\":\"on\",\"watts\":60,\"ratedWatts\":60}"}
-          </code>
+          <div className="grid grid-cols-[210px_140px_72px_140px_72px_1fr] gap-x-5 gap-y-3">
+            <div />
+            <HeaderLabel>Sense input</HeaderLabel>
+            <HeaderLabel>Limit</HeaderLabel>
+            <HeaderLabel>Relay</HeaderLabel>
+            <HeaderLabel>Load LED</HeaderLabel>
+            <HeaderLabel>Mapped device</HeaderLabel>
+
+            <div className="row-span-5 flex items-center justify-center rounded-lg border bg-card p-4 shadow-sm">
+              <div className="flex flex-col items-center gap-3">
+                {ready ? (
+                  <wokwi-esp32-devkit-v1 ledPower led1={activeCount > 0} />
+                ) : (
+                  <Fallback label="ESP32" />
+                )}
+                <div className="text-center">
+                  <div className="text-sm font-medium">ESP32 DevKit</div>
+                  <div className="text-xs text-muted-foreground">
+                    reads inputs, drives relays
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {hardwareDevices.map((device) => {
+              const live = liveDevices.get(device.id)
+              const isOn = live?.status === "on"
+
+              return (
+                <CircuitRow
+                  key={device.id}
+                  ready={ready}
+                  active={isOn}
+                  device={device}
+                />
+              )
+            })}
+          </div>
+
+          <div className="mt-5 rounded-lg border bg-card p-3 text-xs text-card-foreground shadow-sm">
+            <div className="font-medium">Serial payload example</div>
+            <code className="mt-1 block truncate text-muted-foreground">
+              {"{\"id\":\"drawing-room-fan-1\",\"status\":\"on\",\"watts\":60,\"ratedWatts\":60}"}
+            </code>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-function ColumnLabel({ x, y, label }: { x: number; y: number; label: string }) {
+function CircuitRow({
+  ready,
+  active,
+  device,
+}: {
+  ready: boolean
+  active: boolean
+  device: (typeof hardwareDevices)[number]
+}) {
   return (
-    <text x={x} y={y} className="fill-muted-foreground text-sm">
-      {label}
-    </text>
+    <>
+      <WokwiPart>
+        {ready ? (
+          <wokwi-slide-switch value={active ? 1 : 0} />
+        ) : (
+          <Fallback label="SW" />
+        )}
+        <PartText title={device.name} detail={device.sense} />
+      </WokwiPart>
+
+      <Connector active={active} />
+
+      <WokwiPart>
+        {ready ? <wokwi-resistor value="220" /> : <Fallback label="R" />}
+        <PartText title="220 ohm" detail="indicator limit" />
+      </WokwiPart>
+
+      <Connector active={active} />
+
+      <WokwiPart>
+        {ready ? <wokwi-ks2e-m-dc5 /> : <Fallback label="Relay" />}
+        <PartText title={`${device.relay} relay`} detail={device.output} />
+      </WokwiPart>
+
+      <Connector active={active} />
+
+      <WokwiPart
+        className={cn(
+          "rounded-full",
+          active && "shadow-[0_0_22px_hsl(var(--primary)/0.45)]"
+        )}
+      >
+        {ready ? (
+          <wokwi-led
+            color={device.ledColor}
+            value={active}
+            brightness={active ? 1 : 0.08}
+            label=""
+          />
+        ) : (
+          <Fallback label="LED" />
+        )}
+      </WokwiPart>
+
+      <div className="flex h-[78px] items-center rounded-lg border bg-card p-3 shadow-sm">
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium">
+            {device.name} {device.ratedWatts}W
+          </div>
+          <div className="truncate font-mono text-[10px] text-muted-foreground">
+            {device.id}
+          </div>
+          <Badge variant={active ? "default" : "outline"} className="mt-2">
+            {active ? "on" : "off"}
+          </Badge>
+        </div>
+      </div>
+    </>
   )
 }
 
-function Wire({ d, active = false }: { d: string; active?: boolean }) {
+function HeaderLabel({ children }: { children: ReactNode }) {
   return (
-    <path
-      d={d}
-      fill="none"
-      stroke={active ? "var(--primary)" : "var(--border)"}
-      strokeWidth={active ? 4 : 3}
-      filter={active ? "url(#wireGlow)" : undefined}
-      opacity={active ? 1 : 0.72}
-    />
+    <div className="px-1 text-xs font-medium uppercase text-muted-foreground">
+      {children}
+    </div>
   )
 }
 
-function PartFrame({
+function Connector({ active }: { active: boolean }) {
+  return (
+    <div className="flex h-[78px] items-center">
+      <div
+        className={cn(
+          "h-1 w-full rounded-full bg-border",
+          active && "bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.55)]"
+        )}
+      />
+    </div>
+  )
+}
+
+function WokwiPart({
   className,
-  style,
   children,
 }: {
   className?: string
-  style?: React.CSSProperties
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <div
       className={cn(
-        "absolute flex items-center justify-center rounded-md bg-card/80 p-1 shadow-sm",
+        "flex h-[78px] items-center justify-center gap-2 rounded-lg border bg-card p-2 shadow-sm",
         className
       )}
-      style={style}
     >
       {children}
     </div>
   )
 }
 
-function DeviceLabel({
-  className,
-  style,
-  primary,
-  secondary,
+function PartText({
+  title,
+  detail,
 }: {
-  className?: string
-  style?: React.CSSProperties
-  primary: string
-  secondary: string
+  title: string
+  detail: string
 }) {
   return (
-    <div
-      className={cn(
-        "absolute w-[105px] rounded-md border bg-card/95 px-2 py-1 shadow-sm",
-        className
-      )}
-      style={style}
-    >
-      <div className="truncate text-[11px] font-medium">{primary}</div>
-      <div className="truncate font-mono text-[9px] text-muted-foreground">
-        {secondary}
+    <div className="min-w-0">
+      <div className="truncate text-xs font-medium">{title}</div>
+      <div className="truncate font-mono text-[10px] text-muted-foreground">
+        {detail}
       </div>
     </div>
   )

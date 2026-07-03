@@ -9,6 +9,12 @@ type CommandResponseInput = {
   roomQuery?: string
 }
 
+type StaticResponseInput = {
+  command: string
+  fallback: string
+  context?: string
+}
+
 function fallbackAdvice(state: EnergyState) {
   const activeRooms = state.rooms.filter((room) => room.activeDevices > 0)
   const highestRoom = [...state.rooms].sort(
@@ -16,7 +22,7 @@ function fallbackAdvice(state: EnergyState) {
   )[0]
 
   if (activeRooms.length === 0) {
-    return "AI advice: the office is quiet right now. No lights or fans are drawing power, so there is nothing urgent to fix."
+    return "The office is quiet right now. No lights or fans are drawing power, so there is nothing urgent to fix."
   }
 
   const firstStep = highestRoom
@@ -26,7 +32,11 @@ function fallbackAdvice(state: EnergyState) {
     ? "Because it is after hours, this is likely wasted energy unless someone is still working."
     : "Because it is office hours, confirm the room is actually occupied before switching anything off."
 
-  return `AI advice: ${activeRooms.length} room${activeRooms.length === 1 ? "" : "s"} still have active devices. ${firstStep} ${scheduleNote}`
+  return `${activeRooms.length} room${activeRooms.length === 1 ? "" : "s"} still have active devices. ${firstStep} ${scheduleNote}`
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 function buildPrompt(state: EnergyState) {
@@ -61,10 +71,12 @@ async function callOpenRouter({
   system,
   user,
   maxTokens = 220,
+  temperature = 0.65,
 }: {
   system: string
   user: string
   maxTokens?: number
+  temperature?: number
 }) {
   if (!config.openRouterApiKey) {
     return null
@@ -90,7 +102,7 @@ async function callOpenRouter({
           content: user,
         },
       ],
-      temperature: 0.35,
+      temperature,
       max_tokens: maxTokens,
     }),
   })
@@ -199,29 +211,40 @@ function looksIncomplete(content: string) {
 }
 
 function stateContext(state: EnergyState) {
-  const rooms = state.rooms
-    .map(
-      (room) =>
-        `${room.name}: ${room.activeDevices}/${room.devices.length} active, ${room.fansOn} fans on, ${room.lightsOn} lights on, ${room.totalWatts}W`
-    )
-    .join("\n")
-  const alerts = state.alerts.length
-    ? state.alerts
-        .map((alert) => `${alert.severity}: ${alert.title} - ${alert.message}`)
-        .join("\n")
-    : "No active alerts."
-
-  return [
-    `Clock: ${state.simulatedClock}`,
-    `After hours: ${state.isAfterHours}`,
-    `Total load: ${state.totalWatts}W`,
-    `Estimated kWh today: ${state.estimatedTodayKwh.toFixed(2)}`,
-    `Active devices: ${state.activeDevices}/${state.deviceCount}`,
-    "Rooms:",
-    rooms,
-    "Alerts:",
-    alerts,
-  ].join("\n")
+  return JSON.stringify(
+    {
+      clock: state.simulatedClock,
+      afterHours: state.isAfterHours,
+      totalWatts: state.totalWatts,
+      estimatedTodayKwh: state.estimatedTodayKwh.toFixed(2),
+      activeDevices: state.activeDevices,
+      deviceCount: state.deviceCount,
+      rooms: state.rooms.map((room) => ({
+        name: room.name,
+        totalWatts: room.totalWatts,
+        activeDevices: room.activeDevices,
+        deviceCount: room.devices.length,
+        fansOn: room.fansOn,
+        lightsOn: room.lightsOn,
+        devices: room.devices.map((device) => ({
+          name: device.name,
+          type: device.type,
+          status: device.status,
+          watts: device.watts,
+          ratedWatts: device.ratedWatts,
+          minutesInCurrentState: device.minutesInCurrentState,
+        })),
+      })),
+      alerts: state.alerts.map((alert) => ({
+        severity: alert.severity,
+        title: alert.title,
+        message: alert.message,
+        roomId: alert.roomId ?? null,
+      })),
+    },
+    null,
+    2
+  )
 }
 
 export async function formatAiCommandResponse({
@@ -252,28 +275,83 @@ export async function formatAiCommandResponse({
       : roomQuery
         ? `Requested room query: ${roomQuery}`
         : "No specific room requested."
+    const system = [
+      "You are a helpful coworker inside a Discord server for a small office energy monitor.",
+      "Write a natural message for the user's command using the live data. Do not sound like a fixed template.",
+      "Vary wording and structure. Use a short paragraph, a few bullets, or compact markdown only when it genuinely helps.",
+      "Use only the provided facts. Do not invent devices, rooms, wattage, or alerts.",
+      "This Discord bot is read-only monitoring. Do not offer to turn devices on, turn devices off, power anything down, or take control actions.",
+      "Write the final Discord reply only. Do not reveal planning, chain-of-thought, drafts, or explanations of how you will answer.",
+      "Discord markdown is allowed: bold, bullets, inline code, short code blocks, and simple ASCII bars.",
+      "Do not use HTML. Do not mention JSON or data structures.",
+      "Keep the reply under 900 characters.",
+    ].join(" ")
+    const user = [
+      `Command: !${command}`,
+      "Room query if any:",
+      roomQuery || "none",
+      "",
+      "Live office data:",
+      stateContext(state),
+      "",
+      "Extra room details:",
+      roomDetails,
+    ].join("\n")
 
+    const content = await callOpenRouter({
+      system,
+      user,
+      maxTokens: 320,
+      temperature: 0.78,
+    })
+
+    if (content && !looksIncomplete(content)) {
+      return content
+    }
+
+    await sleep(700)
+
+    const retry = await callOpenRouter({
+      system: `${system} Your previous answer was missing or too thin. Write a fresh, complete Discord reply now.`,
+      user,
+      maxTokens: 320,
+      temperature: 0.82,
+    })
+
+    return retry && !looksIncomplete(retry) ? retry : fallback
+  } catch {
+    return fallback
+  }
+}
+
+export async function formatAiStaticResponse({
+  command,
+  fallback,
+  context,
+}: StaticResponseInput) {
+  if (!config.openRouterApiKey) {
+    return fallback
+  }
+
+  try {
     const content = await callOpenRouter({
       system: [
         "You are the Discord bot for a live office energy monitor.",
-        "Use only the provided facts. Do not invent devices, rooms, wattage, or alerts.",
-        "Write the final Discord reply only. Do not reveal planning, chain-of-thought, drafts, or explanations of how you will answer.",
-        "Write in concise Discord markdown. You may use bold labels, bullets, inline code, and compact ASCII bars like [###--].",
-        "Use ASCII only. Do not use emojis.",
-        "Do not use HTML. Do not mention JSON unless the user asked for raw data.",
-        "Keep the reply under 1200 characters.",
+        "Write a natural Discord message. Do not sound like a fixed template.",
+        "Use only the command facts provided. Keep command names exact.",
+        "This Discord bot is read-only monitoring. Do not offer control actions.",
+        "Return the final reply only. Discord markdown is allowed. Do not use HTML.",
+        "Keep the reply under 900 characters.",
       ].join(" "),
       user: [
-        `Command: !${command}`,
-        "Deterministic factual answer to preserve:",
+        `Incoming command: !${command}`,
+        "",
+        "Facts to communicate:",
         fallback,
-        "",
-        "Live state:",
-        stateContext(state),
-        "",
-        roomDetails,
+        context ? `\nExtra context:\n${context}` : "",
       ].join("\n"),
-      maxTokens: 420,
+      maxTokens: 220,
+      temperature: 0.8,
     })
 
     return content && !looksIncomplete(content) ? content : fallback
@@ -290,9 +368,10 @@ export async function formatAiAdvice(state: EnergyState) {
   try {
     const content = await callOpenRouter({
       system:
-        "You produce concise, friendly energy-saving advice from live IoT state. Return the final Discord reply only. Do not reveal reasoning or drafts. Use Discord markdown, practical next steps, ASCII only, and no emojis.",
+        "You are a helpful coworker giving energy-saving advice in Discord. Use the live IoT facts, sound natural, avoid templates, and return only the final message. Discord markdown is allowed. Keep it concise. The bot is read-only monitoring, so do not offer to switch devices or take control actions.",
       user: buildPrompt(state),
       maxTokens: 180,
+      temperature: 0.75,
     })
 
     return content || fallbackAdvice(state)
@@ -311,7 +390,7 @@ export async function formatAiAlert(alert: EnergyAlert) {
   try {
     const content = await callOpenRouter({
       system:
-        "You write concise proactive Discord alert messages for office energy monitoring. Return the final Discord reply only. Use Discord markdown, ASCII only, no emojis. Keep it factual and under 500 characters.",
+        "You write short proactive Discord alert messages for office energy monitoring. Sound like a helpful teammate, not a template. Return only the final message. Keep it factual and under 500 characters. The bot is read-only monitoring, so do not offer to switch devices or take control actions.",
       user: [
         `Severity: ${alert.severity}`,
         `Title: ${alert.title}`,
@@ -320,6 +399,7 @@ export async function formatAiAlert(alert: EnergyAlert) {
         alert.roomId ? `Room ID: ${alert.roomId}` : "Room ID: none",
       ].join("\n"),
       maxTokens: 120,
+      temperature: 0.72,
     })
 
     return content || fallback

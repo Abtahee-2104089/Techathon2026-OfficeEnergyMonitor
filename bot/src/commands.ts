@@ -1,5 +1,9 @@
 import { fetchEnergyState, findRoom } from "./api"
-import { formatAiAdvice, formatAiCommandResponse } from "./ai"
+import {
+  formatAiAdvice,
+  formatAiCommandResponse,
+  formatAiStaticResponse,
+} from "./ai"
 import {
   formatAlerts,
   formatDevices,
@@ -34,11 +38,22 @@ export async function handleBotCommand(content: string, prefix: string) {
   const command = commandName.toLowerCase()
 
   if (!knownCommands.has(command)) {
-    return `I don't know that command yet. Try \`${prefix}help\`.`
+    return formatAiStaticResponse({
+      command: command || "empty",
+      fallback: `I don't know that command yet. Try \`${prefix}help\`.`,
+      context: `Known commands: ${Array.from(knownCommands)
+        .map((item) => `${prefix}${item}`)
+        .join(", ")}.`,
+    })
   }
 
   if (command === "help" || command === "commands") {
-    return formatHelp(prefix)
+    return formatAiStaticResponse({
+      command,
+      fallback: formatHelp(prefix),
+      context:
+        "Keep every command name exact, but rewrite the help text like a quick friendly Discord note.",
+    })
   }
 
   const state = await fetchEnergyState()
