@@ -2,8 +2,8 @@
 
 ## Immediate
 
-- [ ] Confirm final team name for GitHub repository naming.
-- [ ] Create public GitHub repository in the required format: `Techathon2026-[TeamName]`.
+- [x] Confirm final team name for GitHub repository naming: Huntrix.
+- [ ] Rename/create public GitHub repository in the required format: `Techathon2026-Huntrix`.
 - [ ] Add all four team members as repository collaborators.
 - [ ] Create GitHub Issues for documentation, diagrams, hardware schematic, testing, demo video, backend, dashboard, and bot.
 
@@ -70,7 +70,7 @@
 - [ ] Add deployment links.
 - [ ] Add screenshots.
 - [ ] Add demo video link.
-- [ ] Add final team contribution breakdown.
+- [x] Add final team contribution breakdown.
 
 ## Validation
 

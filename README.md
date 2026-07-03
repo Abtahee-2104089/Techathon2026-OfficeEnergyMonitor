@@ -2,6 +2,10 @@
 
 A real-time office energy monitoring system for the Techathon Nationals Hackathon preliminary round.
 
+Team: **Huntrix**
+
+Repository name target: `Techathon2026-Huntrix`
+
 The project goal is to monitor office lights and fans through one shared backend, a live animated web dashboard, and a Discord bot. The system uses simulated IoT device data because no physical hardware is required for the preliminary round.
 
 ## Problem Understanding
@@ -265,16 +269,16 @@ bun run check
 - Wokwi representative circuit: [wokwi/diagram.json](wokwi/diagram.json)
 - Wokwi sketch: [wokwi/sketch.ino](wokwi/sketch.ino)
 
-## Team Contribution Plan
+## Team Contributions
 
-All four team members should contribute real artifacts:
+| Member | University | Primary Contribution |
+| --- | --- | --- |
+| Touhidul Alam Seyam | BGC Trust University Bangladesh | Dashboard, backend integration, Discord bot, AI integration |
+| Abtahee Kabir | Chittagong University of Engineering & Technology | Planning, IoT architecture, representative hardware/Wokwi direction |
+| Chandni Barua Jowthi | BGC Trust University Bangladesh | Documentation, setup validation, testing checklist |
+| Noore Tamanna Orny | Chittagong University of Engineering & Technology | Floor plan design, room layout review, visual refinement |
 
-- Developer: backend, dashboard, Discord bot, deployment.
-- Documentation owner: README, setup guide, screenshots, submission checklist.
-- Systems owner: architecture diagram and data-flow explanation.
-- Hardware/demo owner: schematic explanation, demo script, testing checklist, video.
-
-See [docs/team-contributions.md](docs/team-contributions.md) for details.
+See [docs/team-contributions.md](docs/team-contributions.md) for the detailed contribution breakdown.
 
 ## Important Rulebook Notes
 

@@ -1,58 +1,51 @@
 # Team Contributions
 
-The rulebook requires all team members to participate actively. Since only one member is coding, the other members should contribute real repository artifacts, reviews, testing, and demo materials.
+Team name: **Huntrix**
 
-## Roles
+## Members
 
-| Member | Role | GitHub Evidence |
+| Member | University | Primary Area |
 | --- | --- | --- |
-| Member 1 | Lead developer | Code commits, implementation PRs |
-| Member 2 | Documentation and setup | README edits, setup guide, screenshots |
-| Member 3 | Systems and architecture | Architecture diagram, data-flow explanation |
-| Member 4 | Hardware, testing, and demo | Schematic notes, test checklist, demo script/video notes |
+| Touhidul Alam Seyam | BGC Trust University Bangladesh | Dashboard and implementation |
+| Abtahee Kabir | Chittagong University of Engineering & Technology | Planning and IoT |
+| Chandni Barua Jowthi | BGC Trust University Bangladesh | Documentation and testing |
+| Noore Tamanna Orny | Chittagong University of Engineering & Technology | Floor plan design |
 
-## Honest GitHub Contribution Methods
+## Contribution Breakdown
 
-- Add every member as a repository collaborator.
-- Create GitHub Issues for their tasks.
-- Ask members to commit their own files through GitHub web UI if they are not developers.
-- Use pull requests for docs and diagram updates if time allows.
-- Ask members to review PRs and comment on issues.
-- Use `Co-authored-by` trailers only when a member genuinely helped with that commit.
+### Touhidul Alam Seyam
 
-## Suggested Issues
+- Implemented the Next.js dashboard and shared backend API.
+- Built the live office state simulator and power/alert calculations.
+- Integrated InstantDB support for shared state snapshots.
+- Built the Discord bot command flow and local bot tests.
+- Added OpenRouter AI Energy Coach and `!advice` bot command.
+- Connected the interactive SVG floor plan to live device state.
 
-- Create architecture diagram.
-- Write hardware schematic explanation.
-- Prepare Wokwi/Tinkercad screenshot.
-- Write demo script.
-- Test dashboard live updates.
-- Test Discord bot commands.
-- Review README setup instructions.
-- Record final demo video.
+### Abtahee Kabir
 
-## Co-author Format
+- Planned the IoT data flow and one-source-of-truth architecture.
+- Reviewed the representative ESP32/Wokwi circuit approach.
+- Helped define fan/light wattage assumptions and room-device mapping.
+- Contributed to the architecture and hardware planning direction.
 
-Use this only for real collaboration:
+### Chandni Barua Jowthi
 
-```text
-Co-authored-by: Member Name <member-github-email@example.com>
-```
+- Owned documentation quality and submission-readiness checks.
+- Reviewed setup instructions for dashboard, backend, bot, and AI configuration.
+- Prepared testing responsibilities for dashboard live updates and bot command validation.
+- Helped keep the README, checklist, and demo flow understandable for judges.
 
-## Final Contribution Breakdown
+### Noore Tamanna Orny
 
-Update this before submission:
+- Designed and reviewed the office floor plan direction.
+- Helped map rooms, corridor, furniture, windows, doors, fans, and lights.
+- Guided the final floor-plan visual style so the dashboard matched the provided office layout.
+- Reviewed visual clarity for light/dark mode and demo presentation.
 
-```text
-Member 1:
-- 
+## GitHub Evidence Plan
 
-Member 2:
-- 
-
-Member 3:
-- 
-
-Member 4:
-- 
-```
+- Add all four members as repository collaborators.
+- Use GitHub Issues for documentation, IoT schematic, floor plan, testing, and demo tasks.
+- Members can contribute through direct documentation commits, screenshots, issue comments, reviews, or demo assets.
+- Use co-author trailers only when the member genuinely contributed to that commit.

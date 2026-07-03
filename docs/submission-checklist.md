@@ -1,7 +1,7 @@
 # Submission Checklist
 
 - [ ] Repository is public.
-- [ ] Repository name follows `Techathon2026-[TeamName]`.
+- [ ] Repository name follows `Techathon2026-Huntrix`.
 - [ ] README explains the problem, solution, architecture, stack, setup, and run instructions.
 - [ ] README includes API endpoints.
 - [ ] README includes Discord bot commands.
@@ -12,6 +12,6 @@
 - [ ] Demo video link is available.
 - [ ] System diagram image is committed.
 - [ ] Hardware schematic image is committed.
-- [ ] Team contribution breakdown is filled in.
+- [x] Team contribution breakdown is filled in.
 - [ ] All third-party libraries, assets, APIs, and AI assistance are attributed.
 - [ ] Final code is pushed before the deadline.
