@@ -125,16 +125,6 @@ export function AppSidebar() {
                 </SidebarMenuButton>
                 <SidebarMenuBadge>JSON</SidebarMenuBadge>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Open Discord bot commands"
-                  render={<Link href="/bot" />}
-                >
-                  <IconBrandDiscord />
-                  <span>Discord bot</span>
-                </SidebarMenuButton>
-                <SidebarMenuBadge>8</SidebarMenuBadge>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
