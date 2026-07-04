@@ -1,0 +1,32 @@
+services:
+  dashboard:
+    build:
+      context: .
+      target: dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_INSTANT_APP_ID: ${NEXT_PUBLIC_INSTANT_APP_ID:-}
+      NEXT_PUBLIC_INSTANT_API_URI: ${NEXT_PUBLIC_INSTANT_API_URI:-}
+      NEXT_PUBLIC_INSTANT_WEBSOCKET_URI: ${NEXT_PUBLIC_INSTANT_WEBSOCKET_URI:-}
+      INSTANT_APP_ADMIN_TOKEN: ${INSTANT_APP_ADMIN_TOKEN:-}
+      INSTANT_API_URI: ${INSTANT_API_URI:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openrouter/free}
+
+  bot:
+    profiles:
+      - bot
+    build:
+      context: .
+      target: bot
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN:-}
+      DISCORD_CHANNEL_ID: ${DISCORD_CHANNEL_ID:-}
+      BACKEND_URL: ${BACKEND_URL:-http://dashboard:3000}
+      BOT_PREFIX: ${BOT_PREFIX:-!}
+      ALERT_POLL_MS: ${ALERT_POLL_MS:-10000}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openrouter/free}
+    depends_on:
+      - dashboard

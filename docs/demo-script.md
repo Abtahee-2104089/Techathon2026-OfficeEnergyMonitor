@@ -1,26 +1,43 @@
-# Demo Script
+# 180-Second Demo Script
 
-Target length: under 3 minutes.
+Target length: 3 minutes maximum.
 
-## 0:00 - 0:15 Problem
+## 0:00 - 0:20 Opening Problem
 
-"Our office uses Discord for everything, but lights and fans are often left on after work. This system gives the boss a live dashboard and a Discord bot to monitor device status and power usage."
+Show: dashboard home page at `http://localhost:3000`.
 
-## 0:15 - 1:10 Dashboard
+Say:
+"This is Huntrix's office energy monitor for the Techathon problem. The office uses Discord for daily work, but people leave lights and fans running after hours. Our solution gives the boss one live dashboard and one Discord bot backed by the same simulated IoT state."
+
+## 0:20 - 1:05 Live Dashboard
 
 Show:
 
-- Top-view office layout.
-- Lights glowing when on.
-- Fans spinning when on.
-- Live device panel.
-- Total power meter.
-- Per-room usage.
-- Active alerts.
+- Top metrics: current load, devices on, open alerts, office time.
+- SVG floor plan.
+- Wait a few seconds so lights/fans visibly change.
+- Point at glowing lights and spinning fans.
+- Hover a device to show the small info card.
+- Click a device to open the detail drawer.
 
-Mention that updates happen live without refreshing.
+Say:
+"The simulator changes device states frequently, so the dashboard stays visibly live without refresh. Each room has two fans and three lights. When a light is on it glows, and when a fan is on it spins. The hover card and drawer both read the same live backend state."
 
-## 1:10 - 1:50 Discord Bot
+## 1:05 - 1:35 Power, Alerts, And Analytics
+
+Show:
+
+- Room power chart on the dashboard.
+- Active alerts panel.
+- `/analytics` route with usage charts.
+- `/alerts` route if there are active alerts.
+
+Say:
+"The backend calculates total watts, per-room watts, today's estimated kWh, and active alerts. Alerts cover devices left on after the 9 to 5 office window, a room where everything has been on for too long, and unusually high load."
+
+## 1:35 - 2:05 Discord Bot
+
+Show: Discord server or local bot test output.
 
 Run:
 
@@ -28,24 +45,38 @@ Run:
 !status
 !room work1
 !usage
+!advice
 ```
 
-Mention that the bot reads from the same backend as the dashboard.
+Say:
+"The Discord bot does not use random or hardcoded answers. Every command fetches the same `/api/state` endpoint used by the dashboard. If OpenRouter is configured, it turns the live facts into a more natural Discord message. If the LLM is unavailable, the deterministic fallback still works."
 
-## 1:50 - 2:20 Architecture
+## 2:05 - 2:30 Architecture
 
-Show the system diagram:
+Show:
 
-```text
-simulated devices -> backend -> dashboard and Discord bot
-```
+- `/architecture`
+- System architecture SVG.
+- Discord flow SVG.
 
-Emphasize one source of truth.
+Say:
+"The important design point is one source of truth. Simulated device data flows into the Next.js backend. The web dashboard, hardware preview, AI coach, and Discord bot all read that shared state contract."
 
-## 2:20 - 2:45 Hardware Concept
+## 2:30 - 2:50 Hardware Concept
 
-Show the schematic screenshot and explain that one representative room is modeled with an ESP32, device state inputs, and optional current sensing.
+Show:
 
-## 2:45 - 3:00 Close
+- `/hardware`
+- Wokwi relay/sensing preview.
+- Pin mapping table.
+- `wokwi/diagram.json` or `docs/assets/one-room-hardware-schematic.svg`.
 
-"The result is a working real-time monitoring prototype that can be extended to real IoT sensors and office automation."
+Say:
+"For hardware, we model one representative room. An ESP32 reads five safe device-state inputs and drives five relay channels for two fans and three lights. LEDs stand in for loads in the simulation; real AC wiring would need certified relays, isolation, fuses, and electrical review."
+
+## 2:50 - 3:00 Close
+
+Show: dashboard home page again.
+
+Say:
+"This is a working real-time prototype: live dashboard, shared backend, Discord bot, AI-assisted responses, visual floor plan, alerts, and a sensible hardware concept ready to extend toward real IoT sensors."

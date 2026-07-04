@@ -5,6 +5,8 @@ import type { EnergyState } from "@/lib/energy-simulator"
 
 const appId = process.env.NEXT_PUBLIC_INSTANT_APP_ID ?? process.env.INSTANT_APP_ID
 const adminToken = process.env.INSTANT_APP_ADMIN_TOKEN
+const apiURI =
+  process.env.INSTANT_API_URI ?? process.env.NEXT_PUBLIC_INSTANT_API_URI
 
 const db =
   appId && adminToken
@@ -12,6 +14,7 @@ const db =
         appId,
         adminToken,
         schema,
+        ...(apiURI ? { apiURI } : {}),
       })
     : null
 

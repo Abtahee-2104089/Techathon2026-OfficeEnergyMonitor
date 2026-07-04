@@ -1,0 +1,12 @@
+.git
+.next
+node_modules
+dashboard/.next
+dashboard/node_modules
+bot/node_modules
+.docker
+.env
+.env.local
+bot/.env
+dashboard/.env.local
+*.log

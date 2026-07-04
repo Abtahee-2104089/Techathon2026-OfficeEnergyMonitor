@@ -10,259 +10,268 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { MermaidDiagram } from "@/components/mermaid-diagram"
 import { PageHeading } from "@/components/page-heading"
 import { cn } from "@/lib/utils"
 
-const wholeSystemDiagram = String.raw`
-flowchart LR
-  classDef device fill:#eef6ff,stroke:#2563eb,color:#0f172a
-  classDef backend fill:#f5f3ff,stroke:#7c3aed,color:#0f172a
-  classDef ui fill:#ecfdf5,stroke:#059669,color:#0f172a
-  classDef alert fill:#fff7ed,stroke:#ea580c,color:#0f172a
+type DiagramNode = {
+  id: string
+  title: string
+  detail: string
+  x: number
+  y: number
+  tone: "device" | "backend" | "ui" | "alert" | "data"
+}
 
-  subgraph office["Office Setup"]
-    DR["Drawing Room<br/>2 fans + 3 lights"]:::device
-    W1["Work Room 1<br/>2 fans + 3 lights"]:::device
-    W2["Work Room 2<br/>2 fans + 3 lights"]:::device
-  end
-
-  subgraph simulator["Simulated Device Layer"]
-    defs["Device definitions<br/>id, room, type, ratedWatts"]:::device
-    clock["Real Asia/Dhaka clock<br/>9 to 5 office-hours rule"]:::device
-    toggles["Random toggle tick<br/>lights/fans change every ~1.5s"]:::device
-    payload["EnergyState JSON<br/>15 devices, 3 room summaries, usage"]:::device
-  end
-
-  subgraph backend["Single Backend / Source Of Truth"]
-    api["Next.js API<br/>GET /api/state, no-store"]:::backend
-    rules["Alert rules<br/>after hours, high load, all-on runtime"]:::alert
-    instant["InstantDB snapshot<br/>optional realtime cache"]:::backend
-    aiRoute["AI insight API<br/>OpenRouter-backed summaries"]:::backend
-  end
-
-  subgraph web["Web Dashboard"]
-    floor["Interactive floor plan<br/>glowing lights + spinning fans"]:::ui
-    cards["Device cards + room tables"]:::ui
-    charts["Usage charts + analytics"]:::ui
-    hardware["Hardware / Wokwi preview"]:::ui
-  end
-
-  subgraph discord["Discord Interface"]
-    bot["Discord bot runtime"]:::ui
-    commands["Prefix commands<br/>!status !room !usage !alerts"]:::ui
-    proactive["Proactive alert posts"]:::alert
-    llm["LLM response humanizer"]:::backend
-  end
-
-  DR --> defs
-  W1 --> defs
-  W2 --> defs
-  defs --> toggles
-  clock --> rules
-  toggles --> payload --> api
-  api --> rules
-  api --> instant
-  api --> aiRoute
-  instant --> floor
-  instant --> cards
-  instant --> charts
-  api --> hardware
-  api --> bot
-  bot --> commands
-  bot --> proactive
-  bot --> llm
-  llm --> commands
-  rules --> proactive
-`
-
-const iotDiagram = String.raw`
-flowchart TB
-  classDef safe fill:#ecfdf5,stroke:#059669,color:#0f172a
-  classDef control fill:#eef6ff,stroke:#2563eb,color:#0f172a
-  classDef mains fill:#fff7ed,stroke:#ea580c,color:#0f172a
-  classDef data fill:#f5f3ff,stroke:#7c3aed,color:#0f172a
-
-  subgraph room["Representative Drawing Room Circuit"]
-    subgraph inputs["Safe Low-Voltage State Inputs"]
-      sw1["Fan 1 state switch<br/>GPIO 32"]:::safe
-      sw2["Fan 2 state switch<br/>GPIO 33"]:::safe
-      sw3["Light 1 state switch<br/>GPIO 25"]:::safe
-      sw4["Light 2 state switch<br/>GPIO 26"]:::safe
-      sw5["Light 3 state switch<br/>GPIO 27"]:::safe
-    end
-
-    esp["ESP32 DevKit<br/>Wokwi sketch loop every 2.5s"]:::control
-
-    subgraph relays["Relay / Contactor Side"]
-      r1["CH1 relay<br/>GPIO 16"]:::control
-      r2["CH2 relay<br/>GPIO 17"]:::control
-      r3["CH3 relay<br/>GPIO 18"]:::control
-      r4["CH4 relay<br/>GPIO 19"]:::control
-      r5["CH5 relay<br/>GPIO 21"]:::control
-    end
-
-    subgraph loads["Room Loads"]
-      fan1["Fan 1<br/>60W"]:::mains
-      fan2["Fan 2<br/>60W"]:::mains
-      light1["Light 1<br/>15W"]:::mains
-      light2["Light 2<br/>15W"]:::mains
-      light3["Light 3<br/>15W"]:::mains
-    end
-
-    current["Optional ACS712<br/>aggregate current sensing"]:::safe
-    serial["Serial JSON payload<br/>id, status, watts, ratedWatts"]:::data
-  end
-
-  sw1 --> esp
-  sw2 --> esp
-  sw3 --> esp
-  sw4 --> esp
-  sw5 --> esp
-  esp --> r1 --> fan1
-  esp --> r2 --> fan2
-  esp --> r3 --> light1
-  esp --> r4 --> light2
-  esp --> r5 --> light3
-  loads --> current --> esp
-  esp --> serial
-  serial --> api["Backend API<br/>same state contract as simulator"]:::data
-
-  note["Real AC wiring requires certified relay modules, fuses, isolation, and electrical review. Wokwi uses slide switches and LEDs as safe stand-ins."]:::mains
-  note -. safety note .- relays
-`
-
-const webDiagram = String.raw`
-flowchart LR
-  classDef server fill:#f5f3ff,stroke:#7c3aed,color:#0f172a
-  classDef client fill:#ecfdf5,stroke:#059669,color:#0f172a
-  classDef data fill:#eef6ff,stroke:#2563eb,color:#0f172a
-  classDef alert fill:#fff7ed,stroke:#ea580c,color:#0f172a
-
-  browser["Browser<br/>Next.js App Router UI"]:::client
-
-  subgraph dashboard["Dashboard Pages"]
-    home["/ dashboard<br/>floor plan + live metrics"]:::client
-    devices["/devices<br/>room device table"]:::client
-    alerts["/alerts<br/>anomaly rules"]:::alert
-    analytics["/analytics<br/>Recharts usage views"]:::client
-    architecture["/architecture<br/>Mermaid diagrams"]:::client
-    hardware["/hardware<br/>Wokwi elements preview"]:::client
-    botPage["/bot<br/>Discord command guide"]:::client
-  end
-
-  subgraph api["Next.js Backend Routes"]
-    stateApi["GET /api/state<br/>returns fresh EnergyState"]:::server
-    aiApi["POST /api/ai-insight<br/>OpenRouter summary"]:::server
-  end
-
-  subgraph state["State Construction"]
-    simulator["energy-simulator.ts<br/>1.5s random toggle ticks"]:::data
-    dhakaClock["Asia/Dhaka clock<br/>9 to 5 schedule"]:::data
-    alertsEngine["alert builder<br/>after-hours + high-load + all-on"]:::alert
-    instantAdmin["instant-admin.ts<br/>writes current snapshot"]:::server
-  end
-
-  subgraph db["Realtime Store"]
-    instant["InstantDB<br/>snapshots, rooms, devices, alerts"]:::data
-  end
-
-  browser --> home
-  browser --> devices
-  browser --> alerts
-  browser --> analytics
-  browser --> architecture
-  browser --> hardware
-  browser --> botPage
-
-  home --> poll["useEnergyState<br/>polls every 1.5s"]:::client
-  devices --> poll
-  alerts --> poll
-  analytics --> poll
-  poll --> instant
-  instant -. fallback if unavailable .-> stateApi
-
-  stateApi --> simulator
-  stateApi --> dhakaClock
-  simulator --> alertsEngine
-  dhakaClock --> alertsEngine
-  alertsEngine --> instantAdmin --> instant
-  aiApi --> stateApi
-  aiApi --> openrouter["OpenRouter<br/>friendly recommendations"]:::server
-`
-
-const botDiagram = String.raw`
-sequenceDiagram
-  autonumber
-  participant Boss as Discord User / Boss
-  participant Discord as Discord Gateway
-  participant Bot as Huntrix Bot
-  participant API as Shared Backend API
-  participant LLM as OpenRouter LLM
-  participant Channel as Alert Channel
-
-  Boss->>Discord: !status / !room / !usage / !alerts / !devices / !advice
-  Discord->>Bot: MESSAGE_CREATE with content
-  Bot->>Bot: parse prefix command
-  Bot->>API: GET /api/state
-  API-->>Bot: Fresh EnergyState with random toggles + Dhaka clock
-  Bot->>Bot: build deterministic factual fallback
-  alt OpenRouter key configured
-    Bot->>LLM: live facts + natural-language request
-    LLM-->>Bot: natural Discord markdown
-    Bot->>Bot: sanitize markdown, remove draft leakage, fallback if invalid
-  else LLM unavailable
-    Bot->>Bot: use deterministic formatter
-  end
-  Bot-->>Discord: reply with grounded markdown response
-  Discord-->>Boss: command answer
-
-  loop every ALERT_POLL_SECONDS
-    Bot->>API: GET /api/state
-    API-->>Bot: current alerts
-    alt new alert id
-      Bot->>LLM: humanize proactive alert
-      LLM-->>Bot: short alert text
-      Bot-->>Channel: after-hours / high-load alert
-    end
-  end
-`
-
-const deploymentDiagram = String.raw`
-flowchart LR
-  classDef repo fill:#eef6ff,stroke:#2563eb,color:#0f172a
-  classDef vercel fill:#f5f3ff,stroke:#7c3aed,color:#0f172a
-  classDef runtime fill:#ecfdf5,stroke:#059669,color:#0f172a
-
-  repo["GitHub Repo<br/>Techathon2026-Huntrix"]:::repo
-  root["Vercel Project Root<br/>dashboard/"]:::vercel
-  install["Install Command<br/>bun install"]:::vercel
-  build["Build Command<br/>bun run build"]:::vercel
-  next["Next.js Output<br/>.next"]:::vercel
-  app["Public Dashboard<br/>Vercel deployment"]:::runtime
-  bot["Discord Bot<br/>local/server process"]:::runtime
-  env["Environment Variables<br/>OpenRouter, InstantDB, backend URL"]:::runtime
-
-  repo --> root --> install --> build --> next --> app
-  env --> app
-  env --> bot
-  app --> api["/api/state + /api/ai-insight"]:::runtime
-  bot --> api
-  api --> db["InstantDB optional snapshot"]:::runtime
-  api --> llm["OpenRouter optional LLM"]:::runtime
-`
+type DiagramEdge = {
+  from: string
+  to: string
+  label?: string
+}
 
 const repoBase = "https://github.com/Seyamalam/Techathon2026-Huntrix/blob/main"
-const architectureSourceHref = `${repoBase}/dashboard/app/architecture/page.tsx`
+
+const toneClasses = {
+  device: "fill-sky-50 stroke-sky-500 dark:fill-sky-950 dark:stroke-sky-400",
+  backend:
+    "fill-violet-50 stroke-violet-500 dark:fill-violet-950 dark:stroke-violet-400",
+  ui: "fill-emerald-50 stroke-emerald-500 dark:fill-emerald-950 dark:stroke-emerald-400",
+  alert:
+    "fill-amber-50 stroke-amber-500 dark:fill-amber-950 dark:stroke-amber-400",
+  data: "fill-slate-50 stroke-slate-400 dark:fill-slate-900 dark:stroke-slate-500",
+}
+
+const systemNodes: DiagramNode[] = [
+  {
+    id: "office",
+    title: "Office rooms",
+    detail: "3 rooms, 15 lights/fans",
+    x: 40,
+    y: 120,
+    tone: "device",
+  },
+  {
+    id: "sim",
+    title: "Simulated IoT layer",
+    detail: "frequent state changes",
+    x: 270,
+    y: 120,
+    tone: "device",
+  },
+  {
+    id: "api",
+    title: "Single backend API",
+    detail: "GET /api/state",
+    x: 500,
+    y: 120,
+    tone: "backend",
+  },
+  {
+    id: "instant",
+    title: "InstantDB snapshot",
+    detail: "optional realtime cache",
+    x: 500,
+    y: 280,
+    tone: "data",
+  },
+  {
+    id: "web",
+    title: "Web dashboard",
+    detail: "floor plan, charts, alerts",
+    x: 730,
+    y: 60,
+    tone: "ui",
+  },
+  {
+    id: "bot",
+    title: "Discord bot",
+    detail: "commands + alert posts",
+    x: 730,
+    y: 210,
+    tone: "ui",
+  },
+  {
+    id: "ai",
+    title: "OpenRouter",
+    detail: "natural wording only",
+    x: 730,
+    y: 360,
+    tone: "backend",
+  },
+]
+
+const systemEdges: DiagramEdge[] = [
+  { from: "office", to: "sim", label: "device state" },
+  { from: "sim", to: "api", label: "EnergyState JSON" },
+  { from: "api", to: "web", label: "poll 1.5s" },
+  { from: "api", to: "bot", label: "same source" },
+  { from: "api", to: "instant", label: "snapshot" },
+  { from: "api", to: "ai", label: "facts" },
+  { from: "ai", to: "bot", label: "humanized copy" },
+]
+
+const webNodes: DiagramNode[] = [
+  {
+    id: "pages",
+    title: "Dashboard pages",
+    detail: "/, devices, alerts, analytics",
+    x: 60,
+    y: 90,
+    tone: "ui",
+  },
+  {
+    id: "hook",
+    title: "useEnergyState",
+    detail: "polls live state",
+    x: 300,
+    y: 90,
+    tone: "data",
+  },
+  {
+    id: "api",
+    title: "Next API route",
+    detail: "fresh no-store response",
+    x: 540,
+    y: 90,
+    tone: "backend",
+  },
+  {
+    id: "rules",
+    title: "Alert builder",
+    detail: "9 to 5 + high load",
+    x: 540,
+    y: 260,
+    tone: "alert",
+  },
+  {
+    id: "render",
+    title: "Live UI",
+    detail: "SVG glow, fan spin, charts",
+    x: 780,
+    y: 90,
+    tone: "ui",
+  },
+]
+
+const webEdges: DiagramEdge[] = [
+  { from: "pages", to: "hook" },
+  { from: "hook", to: "api" },
+  { from: "api", to: "rules" },
+  { from: "api", to: "render" },
+  { from: "rules", to: "render", label: "alerts" },
+]
+
+const botNodes: DiagramNode[] = [
+  {
+    id: "user",
+    title: "Discord user",
+    detail: "!status, !room, !usage",
+    x: 60,
+    y: 140,
+    tone: "ui",
+  },
+  {
+    id: "bot",
+    title: "Huntrix bot",
+    detail: "parses command",
+    x: 300,
+    y: 140,
+    tone: "ui",
+  },
+  {
+    id: "api",
+    title: "Shared backend",
+    detail: "live office facts",
+    x: 540,
+    y: 140,
+    tone: "backend",
+  },
+  {
+    id: "llm",
+    title: "OpenRouter",
+    detail: "varied Discord markdown",
+    x: 540,
+    y: 310,
+    tone: "backend",
+  },
+  {
+    id: "channel",
+    title: "Alert channel",
+    detail: "proactive posts",
+    x: 780,
+    y: 140,
+    tone: "alert",
+  },
+]
+
+const botEdges: DiagramEdge[] = [
+  { from: "user", to: "bot", label: "message" },
+  { from: "bot", to: "api", label: "fetch state" },
+  { from: "api", to: "bot", label: "facts" },
+  { from: "bot", to: "llm", label: "wording" },
+  { from: "llm", to: "bot", label: "reply text" },
+  { from: "api", to: "channel", label: "new alerts" },
+]
+
+const deploymentNodes: DiagramNode[] = [
+  {
+    id: "repo",
+    title: "GitHub repo",
+    detail: "Techathon2026-Huntrix",
+    x: 50,
+    y: 140,
+    tone: "data",
+  },
+  {
+    id: "docker",
+    title: "Docker local stack",
+    detail: "dashboard + optional InstantDB",
+    x: 290,
+    y: 60,
+    tone: "backend",
+  },
+  {
+    id: "vercel",
+    title: "Vercel dashboard",
+    detail: "root: dashboard/",
+    x: 290,
+    y: 220,
+    tone: "ui",
+  },
+  {
+    id: "bot",
+    title: "Bot runtime",
+    detail: "local/server process",
+    x: 530,
+    y: 140,
+    tone: "ui",
+  },
+  {
+    id: "services",
+    title: "External services",
+    detail: "Discord, OpenRouter, InstantDB",
+    x: 770,
+    y: 140,
+    tone: "backend",
+  },
+]
+
+const deploymentEdges: DiagramEdge[] = [
+  { from: "repo", to: "docker", label: "one command" },
+  { from: "repo", to: "vercel", label: "deploy" },
+  { from: "repo", to: "bot", label: "run bot" },
+  { from: "docker", to: "services" },
+  { from: "vercel", to: "services" },
+  { from: "bot", to: "services" },
+]
 
 export default function ArchitecturePage() {
   return (
     <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-5 p-4 sm:p-6">
       <PageHeading
         title="Architecture"
-        description="Mermaid-rendered diagrams for the shared backend, simulated IoT layer, dashboard, Discord bot, AI response path, and deployment setup."
+        description="Hand-authored SVG architecture views for the shared backend, simulated IoT layer, dashboard, Discord bot, AI response path, and deployment setup."
       >
-        <Badge>Mermaid</Badge>
+        <Badge>SVG diagrams</Badge>
         <Badge variant="outline">single source of truth</Badge>
         <Badge variant="secondary">dashboard + bot</Badge>
       </PageHeading>
@@ -270,32 +279,30 @@ export default function ArchitecturePage() {
       <DiagramCard
         title="Whole System Diagram"
         description="Complete flow from office device state to backend, dashboard, Discord bot, alerts, and AI summaries."
-        chart={wholeSystemDiagram}
-        sourceHref={architectureSourceHref}
-      />
-      <DiagramCard
-        title="IoT Hardware Diagram"
-        description="Representative Wokwi/ESP32 circuit, safe inputs, relay channels, load devices, and telemetry payload."
-        chart={iotDiagram}
-        sourceHref={architectureSourceHref}
+        nodes={systemNodes}
+        edges={systemEdges}
+        sourceHref={`${repoBase}/docs/assets/system-architecture.svg`}
       />
       <DiagramCard
         title="Web Dashboard Diagram"
         description="Next.js routes, API routes, simulator, alert builder, InstantDB sync, and visual dashboard pages."
-        chart={webDiagram}
-        sourceHref={architectureSourceHref}
+        nodes={webNodes}
+        edges={webEdges}
+        sourceHref={`${repoBase}/docs/assets/web-dashboard-architecture.svg`}
       />
       <DiagramCard
         title="Discord Bot And AI Diagram"
         description="Command lifecycle, shared state fetch, deterministic fallback, LLM humanization, and proactive alerts."
-        chart={botDiagram}
-        sourceHref={architectureSourceHref}
+        nodes={botNodes}
+        edges={botEdges}
+        sourceHref={`${repoBase}/docs/assets/discord-ai-flow.svg`}
       />
       <DiagramCard
         title="Deployment Diagram"
-        description="Vercel root directory, build commands, dashboard deployment, bot runtime, and environment variables."
-        chart={deploymentDiagram}
-        sourceHref={architectureSourceHref}
+        description="Docker local setup, Vercel dashboard deployment, bot runtime, and optional external services."
+        nodes={deploymentNodes}
+        edges={deploymentEdges}
+        sourceHref={`${repoBase}/docs/assets/deployment-architecture.svg`}
       />
     </main>
   )
@@ -304,12 +311,14 @@ export default function ArchitecturePage() {
 function DiagramCard({
   title,
   description,
-  chart,
+  nodes,
+  edges,
   sourceHref,
 }: {
   title: string
   description: string
-  chart: string
+  nodes: DiagramNode[]
+  edges: DiagramEdge[]
   sourceHref: string
 }) {
   return (
@@ -322,7 +331,7 @@ function DiagramCard({
             href={sourceHref}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Open ${title} source in GitHub`}
+            aria-label={`Open ${title} SVG in GitHub`}
             className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
           >
             <IconExternalLink />
@@ -330,8 +339,108 @@ function DiagramCard({
         </CardAction>
       </CardHeader>
       <CardContent>
-        <MermaidDiagram chart={chart} />
+        <FlowSvg nodes={nodes} edges={edges} />
       </CardContent>
     </Card>
+  )
+}
+
+function FlowSvg({
+  nodes,
+  edges,
+}: {
+  nodes: DiagramNode[]
+  edges: DiagramEdge[]
+}) {
+  const nodeMap = new Map(nodes.map((node) => [node.id, node]))
+
+  return (
+    <div className="overflow-x-auto rounded-lg border bg-muted/20 p-3">
+      <svg
+        role="img"
+        aria-label="Architecture flow diagram"
+        viewBox="0 0 980 470"
+        className="min-w-[920px]"
+      >
+        <defs>
+          <marker
+            id="arch-arrow"
+            markerWidth="12"
+            markerHeight="12"
+            refX="10"
+            refY="4"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <path d="M0 0 L0 8 L11 4 z" className="fill-foreground" />
+          </marker>
+        </defs>
+        {edges.map((edge) => {
+          const from = nodeMap.get(edge.from)
+          const to = nodeMap.get(edge.to)
+
+          if (!from || !to) {
+            return null
+          }
+
+          const fromX = from.x + 170
+          const fromY = from.y + 48
+          const toX = to.x
+          const toY = to.y + 48
+          const midX = (fromX + toX) / 2
+          const path =
+            Math.abs(fromY - toY) < 20
+              ? `M${fromX} ${fromY} L${toX - 12} ${toY}`
+              : `M${fromX} ${fromY} C${midX} ${fromY}, ${midX} ${toY}, ${toX - 12} ${toY}`
+
+          return (
+            <g key={`${edge.from}-${edge.to}`}>
+              <path
+                d={path}
+                className="fill-none stroke-foreground/60"
+                strokeWidth="2.5"
+                markerEnd="url(#arch-arrow)"
+              />
+              {edge.label ? (
+                <text
+                  x={midX}
+                  y={(fromY + toY) / 2 - 8}
+                  textAnchor="middle"
+                  className="fill-muted-foreground text-[11px] font-medium"
+                >
+                  {edge.label}
+                </text>
+              ) : null}
+            </g>
+          )
+        })}
+        {nodes.map((node) => (
+          <g key={node.id}>
+            <rect
+              x={node.x}
+              y={node.y}
+              width="170"
+              height="96"
+              rx="14"
+              className={cn("stroke-2", toneClasses[node.tone])}
+            />
+            <text
+              x={node.x + 18}
+              y={node.y + 38}
+              className="fill-foreground text-[15px] font-semibold"
+            >
+              {node.title}
+            </text>
+            <text
+              x={node.x + 18}
+              y={node.y + 64}
+              className="fill-muted-foreground text-[12px] font-medium"
+            >
+              {node.detail}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
   )
 }

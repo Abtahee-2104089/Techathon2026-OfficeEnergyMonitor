@@ -1,89 +1,24 @@
 # Architecture
 
-The system has one source of truth: the backend state exposed by the dashboard package. The simulated device layer creates live device state, and both the dashboard and Discord bot read that same backend contract.
+The system has one source of truth: the backend state exposed by the dashboard package. The simulated device layer creates live device state, and both the dashboard and Discord bot read the same backend contract.
+
+Official diagrams are SVG image artifacts, not Mermaid or Graphviz.
 
 ## Whole System
 
-```mermaid
-flowchart LR
-  subgraph Office["Office Setup"]
-    DR["Drawing Room<br/>2 fans + 3 lights"]
-    W1["Work Room 1<br/>2 fans + 3 lights"]
-    W2["Work Room 2<br/>2 fans + 3 lights"]
-  end
+![Huntrix system architecture](assets/system-architecture.svg)
 
-  subgraph Simulator["Simulated IoT Layer"]
-    Defs["Device definitions<br/>id, room, type, rated watts"]
-    Tick["Deterministic random toggle tick<br/>changes about every 1.5s"]
-    Clock["Real Asia/Dhaka clock<br/>9 to 5 office-hours rule"]
-    State["EnergyState JSON<br/>15 devices, rooms, watts, alerts"]
-  end
+## Web Dashboard
 
-  subgraph Backend["Single Backend / Source Of Truth"]
-    API["Next.js GET /api/state<br/>fresh no-store response"]
-    AlertRules["Alert rules<br/>after-hours, high load, all-on runtime"]
-    Instant["InstantDB snapshot<br/>optional realtime cache"]
-    Insight["POST /api/ai-insight<br/>OpenRouter summary"]
-  end
+![Web dashboard architecture](assets/web-dashboard-architecture.svg)
 
-  subgraph Dashboard["Web Dashboard"]
-    Floor["SVG floor plan<br/>glowing lights + spinning fans"]
-    Charts["Metrics, tables, charts, alerts"]
-    Hardware["Wokwi hardware preview"]
-  end
+## Discord Bot And AI
 
-  subgraph Discord["Discord Interface"]
-    Bot["discord.js bot"]
-    Commands["!status !room !usage !alerts !devices !offhours !advice"]
-    Proactive["Proactive alert posts"]
-    LLM["OpenRouter response humanizer"]
-  end
+![Discord bot and AI flow](assets/discord-ai-flow.svg)
 
-  DR --> Defs
-  W1 --> Defs
-  W2 --> Defs
-  Defs --> Tick --> State --> API
-  Clock --> AlertRules
-  API --> AlertRules
-  API --> Instant
-  API --> Insight
-  Instant --> Floor
-  Instant --> Charts
-  API --> Hardware
-  API --> Bot
-  Bot --> Commands
-  Bot --> Proactive
-  Bot --> LLM --> Commands
-  AlertRules --> Proactive
-```
+## Deployment
 
-## Runtime Data Flow
-
-```mermaid
-sequenceDiagram
-  autonumber
-  participant Browser as Web Dashboard
-  participant API as Next.js /api/state
-  participant Sim as energy-simulator.ts
-  participant DB as InstantDB Snapshot
-  participant Bot as Discord Bot
-  participant LLM as OpenRouter
-
-  loop every 1.5 seconds
-    Browser->>API: fetch fresh state
-    API->>Sim: build current state
-    Sim-->>API: random device toggles + real Dhaka clock
-    API-->>Browser: EnergyState JSON
-    API-->>DB: optional current snapshot sync
-    Browser->>Browser: update floor plan, cards, bars, alerts
-  end
-
-  Bot->>API: fetch same state for command
-  API-->>Bot: EnergyState JSON
-  Bot->>Bot: build factual fallback
-  Bot->>LLM: send live facts for natural wording
-  LLM-->>Bot: Discord markdown response
-```
+![Deployment architecture](assets/deployment-architecture.svg)
 
 ## Component Responsibilities
 
@@ -97,6 +32,7 @@ sequenceDiagram
 ### Backend API
 
 - Serves `GET /api/state` as the shared live state endpoint.
+- Serves `GET /api/ai-insight` for dashboard AI advice.
 - Calculates total and per-room power usage.
 - Builds after-hours, high-load, and all-on runtime alerts.
 - Optionally syncs the current state into InstantDB.
@@ -124,8 +60,7 @@ GET /api/state
 Returns rooms, devices, usage, alerts, generated timestamp, and the current Dhaka office clock.
 
 ```text
-POST /api/ai-insight
+GET /api/ai-insight
 ```
 
 Returns AI-generated or fallback energy advice derived from the current state.
-
