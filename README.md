@@ -69,9 +69,9 @@ This project follows the fixed room/device definition: 15 devices total.
 
 Both the dashboard and Discord bot read from the same backend state. The bot does not generate independent random data.
 
-![Huntrix system architecture](docs/assets/system-architecture.svg)
+![Huntrix system architecture](docs/assets/system-architecture.png)
 
-Official diagrams are hand-authored SVG files, not Mermaid or Graphviz, to match the problem statement requirement.
+Official diagrams are AI-generated PNG image assets, not Mermaid or Graphviz, to match the problem statement requirement.
 
 ## Runtime Data Flow
 
@@ -83,21 +83,21 @@ Official diagrams are hand-authored SVG files, not Mermaid or Graphviz, to match
 
 ## Web Dashboard Architecture
 
-![Web dashboard architecture](docs/assets/web-dashboard-architecture.svg)
+![Web dashboard architecture](docs/assets/web-dashboard-architecture.png)
 
 ## Discord Bot And AI Flow
 
-![Discord bot and AI flow](docs/assets/discord-ai-flow.svg)
+![Discord bot and AI flow](docs/assets/discord-ai-flow.png)
 
 ## Hardware Concept Diagram
 
-![Representative hardware schematic](docs/assets/one-room-hardware-schematic.svg)
+![Representative hardware schematic](docs/assets/one-room-hardware-schematic.png)
 
 The dashboard hardware page renders this relay preview from the same live backend state used by the SVG floor plan, charts, alerts, and Discord bot commands. There is no separate mock state for the hardware view.
 
 ## Deployment Diagram
 
-![Deployment architecture](docs/assets/deployment-architecture.svg)
+![Deployment architecture](docs/assets/deployment-architecture.png)
 
 ## Tech Stack
 
@@ -366,11 +366,11 @@ bun run check
 
 ## Diagrams And Hardware
 
-- System diagram: [docs/assets/system-architecture.svg](docs/assets/system-architecture.svg)
-- Web dashboard diagram: [docs/assets/web-dashboard-architecture.svg](docs/assets/web-dashboard-architecture.svg)
-- Discord bot and AI diagram: [docs/assets/discord-ai-flow.svg](docs/assets/discord-ai-flow.svg)
-- Deployment diagram: [docs/assets/deployment-architecture.svg](docs/assets/deployment-architecture.svg)
-- Hardware schematic: [docs/assets/one-room-hardware-schematic.svg](docs/assets/one-room-hardware-schematic.svg)
+- System diagram: [docs/assets/system-architecture.png](docs/assets/system-architecture.png)
+- Web dashboard diagram: [docs/assets/web-dashboard-architecture.png](docs/assets/web-dashboard-architecture.png)
+- Discord bot and AI diagram: [docs/assets/discord-ai-flow.png](docs/assets/discord-ai-flow.png)
+- Deployment diagram: [docs/assets/deployment-architecture.png](docs/assets/deployment-architecture.png)
+- Hardware schematic: [docs/assets/one-room-hardware-schematic.png](docs/assets/one-room-hardware-schematic.png)
 - Hardware explanation: [docs/hardware-schematic.md](docs/hardware-schematic.md)
 - Wokwi representative circuit: [wokwi/diagram.json](wokwi/diagram.json)
 - Wokwi sketch: [wokwi/sketch.ino](wokwi/sketch.ino)
@@ -405,4 +405,4 @@ See [docs/team-contributions.md](docs/team-contributions.md) for the detailed co
 
 ## Current Status
 
-The dashboard and Discord bot are implemented as separate packages. The dashboard exposes the shared live state API, and the bot reads from that same endpoint. The repo also includes SVG diagrams and a representative Wokwi circuit for the hardware deliverable.
+The dashboard and Discord bot are implemented as separate packages. The dashboard exposes the shared live state API, and the bot reads from that same endpoint. The repo also includes AI-generated PNG diagrams and a representative Wokwi circuit for the hardware deliverable.

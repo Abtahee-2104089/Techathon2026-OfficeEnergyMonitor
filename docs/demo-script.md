@@ -69,7 +69,7 @@ Show:
 - `/hardware`
 - Wokwi relay/sensing preview.
 - Pin mapping table.
-- `wokwi/diagram.json` or `docs/assets/one-room-hardware-schematic.svg`.
+- `wokwi/diagram.json` or `docs/assets/one-room-hardware-schematic.png`.
 
 Say:
 "For hardware, we model one representative room. An ESP32 reads five safe device-state inputs and drives five relay channels for two fans and three lights. LEDs stand in for loads in the simulation; real AC wiring would need certified relays, isolation, fuses, and electrical review."

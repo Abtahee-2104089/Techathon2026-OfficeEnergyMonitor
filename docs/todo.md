@@ -16,7 +16,7 @@ This file is kept as a final status note for reviewers. Active scratch tasks wer
 - Discord bot package with `!status`, `!room`, `!usage`, `!alerts`, `!devices`, `!offhours`, `!advice`, and `!help`.
 - LLM-assisted Discord and dashboard responses with deterministic fallbacks.
 - Proactive Discord alert posting when a channel ID is configured.
-- Hand-authored SVG architecture diagrams.
+- AI-generated PNG architecture diagrams.
 - Representative one-room Wokwi/ESP32 hardware concept.
 - Dockerfile and Docker Compose setup for local review runs.
 - Self-hosted InstantDB local setup script using Docker.

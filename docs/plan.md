@@ -102,8 +102,8 @@ Implementation plan:
 
 Trade-offs:
 
-- Friendly templates are safer than adding an LLM dependency under time pressure.
-- The bot now includes `!alerts`, `!devices`, and `!offhours` in addition to the required commands.
+- OpenRouter humanizes Discord responses when configured, with deterministic fallback text when the model is unavailable.
+- The bot includes `!alerts`, `!devices`, `!offhours`, and `!advice` in addition to the required commands.
 
 Validation:
 
@@ -114,9 +114,9 @@ Validation:
 
 System diagram:
 
-- Use SVG, not Mermaid.
+- Use AI-generated PNG assets, not Mermaid or Graphviz.
 - Show device simulator, backend API, dashboard, Discord bot, and user.
-- Export to `docs/assets/system-architecture.svg`.
+- Export to `docs/assets/system-architecture.png`.
 
 Hardware schematic:
 

@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { IconExternalLink } from "@tabler/icons-react"
 
 import { buttonVariants } from "@/components/ui/button"
@@ -15,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { WokwiCircuitPreview } from "@/components/wokwi-circuit-preview"
 import { hardwareDevices } from "@/lib/hardware-circuit"
 import { cn } from "@/lib/utils"
 
@@ -38,7 +38,42 @@ export default function HardwarePage() {
       </header>
 
       <section className="flex flex-col gap-5">
-        <WokwiCircuitPreview />
+        <Card>
+          <CardHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <CardTitle>One-room hardware schematic</CardTitle>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  AI-generated visual for the representative ESP32 relay and
+                  sensing circuit. It maps to the same device IDs, pin mapping,
+                  and wattage contract used by the backend, dashboard, and
+                  Discord bot.
+                </p>
+              </div>
+              <a
+                href={`${repoBase}/docs/assets/one-room-hardware-schematic.png`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Open hardware schematic image in GitHub"
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+              >
+                <IconExternalLink />
+              </a>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-hidden rounded-lg border bg-muted/20">
+              <Image
+                src="/diagrams/one-room-hardware-schematic.png"
+                alt="Representative ESP32 relay and sensing hardware schematic"
+                width={1600}
+                height={1000}
+                className="h-auto w-full"
+                priority
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -98,8 +133,8 @@ export default function HardwarePage() {
                 href={`${repoBase}/docs/hardware-schematic.md`}
               />
               <FileLine
-                path="docs/assets/one-room-hardware-schematic.svg"
-                href={`${repoBase}/docs/assets/one-room-hardware-schematic.svg`}
+                path="docs/assets/one-room-hardware-schematic.png"
+                href={`${repoBase}/docs/assets/one-room-hardware-schematic.png`}
               />
             </div>
           </CardContent>

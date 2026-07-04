@@ -2,23 +2,23 @@
 
 The system has one source of truth: the backend state exposed by the dashboard package. The simulated device layer creates live device state, and both the dashboard and Discord bot read the same backend contract.
 
-Official diagrams are SVG image artifacts, not Mermaid or Graphviz.
+Official diagrams are AI-generated PNG image artifacts, not Mermaid or Graphviz.
 
 ## Whole System
 
-![Huntrix system architecture](assets/system-architecture.svg)
+![Huntrix system architecture](assets/system-architecture.png)
 
 ## Web Dashboard
 
-![Web dashboard architecture](assets/web-dashboard-architecture.svg)
+![Web dashboard architecture](assets/web-dashboard-architecture.png)
 
 ## Discord Bot And AI
 
-![Discord bot and AI flow](assets/discord-ai-flow.svg)
+![Discord bot and AI flow](assets/discord-ai-flow.png)
 
 ## Deployment
 
-![Deployment architecture](assets/deployment-architecture.svg)
+![Deployment architecture](assets/deployment-architecture.png)
 
 ## Component Responsibilities
 

@@ -7,7 +7,7 @@
 - README documents API endpoints.
 - README documents Discord bot commands.
 - README documents AI/LLM usage and fallback behavior.
-- README links all official SVG diagrams.
+- README links all official PNG diagrams.
 - Dashboard, backend API, bot package, Wokwi files, and docs are included.
 - Team contribution breakdown is filled in.
 - Third-party libraries, APIs, assets, Wokwi, OpenRouter, InstantDB, and AI assistance are attributed.

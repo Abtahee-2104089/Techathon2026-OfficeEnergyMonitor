@@ -4,7 +4,7 @@ The preliminary round does not require real hardware. A representative circuit f
 
 ## Deliverables
 
-- Static schematic export: [docs/assets/one-room-hardware-schematic.svg](assets/one-room-hardware-schematic.svg)
+- Static schematic export: [docs/assets/one-room-hardware-schematic.png](assets/one-room-hardware-schematic.png)
 - Wokwi concept project: [wokwi/diagram.json](../wokwi/diagram.json)
 - Wokwi sketch: [wokwi/sketch.ino](../wokwi/sketch.ino)
 
